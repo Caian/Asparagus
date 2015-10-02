@@ -1,0 +1,404 @@
+﻿#!/usr/bin/python3
+
+#  T3Engine.py
+#
+#  Copyright (C) 2015 Caian Benedicto <caianbene@gmail.com>
+#
+#  This file is part of Asparagus
+#
+#  Asparagus is free software; you can redistribute it and/or modify it 
+#  under the terms of the GNU General Public License as published by 
+#  the Free Software Foundation; either version 2, or (at your option)
+#  any later version.
+#
+#  Asparagus is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+
+import sympy
+from sympy.printing.str import StrPrinter
+import SymbolPool
+import Dynamics
+import Globals
+
+# Just need this for some angle inferences
+from Globals import isTimeConstant
+
+class AliasPrinter(StrPrinter):
+    def __init__(self, aliases):
+        super(AliasPrinter, self).__init__()
+        self.aliases = aliases
+
+    def _print_Symbol(self, expr):
+        s = self.aliases.get(expr, expr.name)
+        return self.aliases.get(s, s)
+    
+    def _print_Function(self, expr):
+        s = self.aliases.get(expr, str(expr.func))
+        return self.aliases.get(s, s) + '(' + ', '.join([str(a) for a in expr.args]) + ')'
+
+# Choo-Choooo
+
+class T3Engine():
+    def __init__(self, printing_iface):
+        self.printer = printing_iface
+        self.scene = None
+        self.aliases = { }
+        self.symbols = None
+        a = self.aliases
+        sympy.Basic.__str__ = lambda self: AliasPrinter(a).doprint(self)
+
+    def mkobject(self, name, tr0):
+        s = str(name)
+        return {
+            '$.name' : s,
+            'tr' : self.symbols.getFunction(s, 'tr', [Globals.time(self.symbols)]),
+            'tr.x' : self.symbols.getFunction(s, 'tr.x', [Globals.time(self.symbols)]),
+            'tr.y' : self.symbols.getFunction(s, 'tr.y', [Globals.time(self.symbols)]),
+            'tr.mass' : self.symbols.getSymbol(s, 'tr.mass', nonnegative=True),
+            'tr.frame' : {
+                'angle' : tr0[2],
+                'theta' : self.symbols.getSymbol(s, 'tr.theta')
+            },
+            'tr.x0' : tr0[0],
+            'tr.y0' : tr0[1],
+            'rt.mass' : self.symbols.getSymbol(s, 'rt.mass', nonnegative=True),
+            'rt.angle' : self.symbols.getFunction(s, 'rt.angle', [Globals.time(self.symbols)]),
+            'rt.frame' : {
+                'dir' : 1,
+            }
+        }
+
+    def hasObject(self, name):
+        return name in self.scene['attachments'].keys()
+
+    def getObject(self, name):
+        for obj in self.scene['objects']:
+            if obj['$.name'] == name:
+                return obj
+        raise Exception('could not find object named %s' % name)
+
+    def loadObject(self, name, props, data, aliases):
+        posx = data['posx']
+        posy = data['posy']
+        posa = data['posy']
+        shape = data['shape']
+        label = aliases.get('$.name', name)
+        # Create a new object, redefine the name (in case it's not the 
+        # same as commanded) and, if it's not already in the scene, add it
+        obj = self.mkobject(name, (posx, posy, posa))
+        name = obj['$.name']
+        if self.hasObject(name):
+            raise Exception('the scene already contains an object named %s' % name)
+        self.scene['objects'].append(obj)
+        self.scene['attachments'][name] = [ ]
+        # Fill the replacement table
+        for k, v in aliases.items():
+            self.aliases[obj[k]] = v
+        # Print the object
+        self.printer.print_object(name, (posx, posy), shape, label, props)
+
+    def loadDynamic(self, name, props, data, aliases):
+        dyn = data['dynamic']
+        bodies = [self.getObject(n) for n in data['bodies']]
+        offs = data['offset']
+        showangles = props.get('showangles', False)
+        def assert_bodies(name, n):
+            if len(bodies) != n:
+                raise Exception('%s dynamic expects %d body, provided %d' % (name, n, len(bodies)))
+        def assert_offs(name, n):
+            if len(offs) != n:
+                raise Exception('%s dynamic expects %d offsets, provided %d' % (name, n, len(offs)))
+        def aliasify(s, p):
+            alias = aliases.get(s, None)
+            if alias != None: 
+                self.aliases[p] = alias
+            return str(p)
+        if dyn == 'force':
+            assert_bodies('force', 1)
+            assert_offs('force', 4)
+            pos = (bodies[0]['tr.x0']+offs[0], bodies[0]['tr.y0']+offs[1],
+                   bodies[0]['tr.x0']+offs[2], bodies[0]['tr.y0']+offs[3])
+            d = Dynamics.ForceDynamic(name, bodies[0], self.symbols)
+            t = aliasify('theta', d.theta)
+            title = aliasify('F', d.getFSym())
+        elif dyn == 'weight':
+            # TODO ignore offset and force it to center of mass
+            assert_bodies('weight', 1)
+            assert_offs('weight', 4)
+            pos = (bodies[0]['tr.x0']+offs[0], bodies[0]['tr.y0']+offs[1],
+                   bodies[0]['tr.x0']+offs[2], bodies[0]['tr.y0']+offs[3])
+            d = Dynamics.WeightDynamic(name, bodies[0], self.symbols)
+            title = str(d.getFSym())
+            showangles = False # Do not show theta for gravity
+        elif dyn == 'rod':
+            assert_bodies('rod', 2)
+            assert_offs('rod', 4)
+            pos = (bodies[0]['tr.x0']+offs[0], bodies[0]['tr.y0']+offs[1],
+                   bodies[1]['tr.x0']+offs[2], bodies[1]['tr.y0']+offs[3])
+            d = Dynamics.RodDynamic(name, bodies[0], bodies[1], self.symbols)
+            aliasify('l', d.l)
+            t = aliasify('thetaa', d.thetaa)
+            title = aliasify('T', d.getTSym())
+        elif dyn == 'spring':
+            assert_bodies('spring', 2)
+            assert_offs('spring', 4)
+            pos = (bodies[0]['tr.x0']+offs[0], bodies[0]['tr.y0']+offs[1],
+                   bodies[1]['tr.x0']+offs[2], bodies[1]['tr.y0']+offs[3])
+            d = Dynamics.SpringDynamic(name, bodies[0], bodies[1], self.symbols)
+            aliasify('l', d.l)
+            aliasify('d', d.d)
+            t = aliasify('thetaa', d.thetaa)
+            aliasify('T', d.getTSym())
+            title = aliasify('k', d.k)
+        elif dyn == 'dampener':
+            assert_bodies('dampener', 2)
+            assert_offs('dampener', 4)
+            title = name
+            pos = (bodies[0]['tr.x0']+offs[0], bodies[0]['tr.y0']+offs[1],
+                   bodies[1]['tr.x0']+offs[2], bodies[1]['tr.y0']+offs[3])
+            d = Dynamics.DampenerDynamic(name, bodies[0], bodies[1], self.symbols)
+            aliasify('l', d.l)
+            aliasify('d', d.d)
+            t = aliasify('thetaa', d.thetaa)
+            aliasify('T', d.getTSym())
+            title = aliasify('b', d.b)
+        else:
+            raise Exception('unknown dynamic type %s' % dyn)
+        # Add dynamic to the list of dynamic in the scene
+        self.scene['dynamics'].append(d)
+        # Add dynamic to the collection of dynamics of each body
+        for body in bodies:
+            self.scene['attachments'][body['$.name']].append(d)
+        # Draw the dynamic
+        self.printer.print_dynamic(name, dyn, pos, title, props)
+        # Draw the angle of the dynamic, if specified
+        if showangles:
+            self.printer.print_angle(name, t)
+
+    def loadGlobals(self, name, aliases):
+        # Fill the replacement table
+        for k, v in aliases.items():
+            self.aliases['%s.%s' % (name, k)] = v
+
+    def load(self, scene_loader):
+        # Initialize the aliases
+        self.printer.print_diagnostic(3, 'initializing alias table for symbols...')
+        self.aliases.clear() 
+        # Initialize the SymbolPool
+        self.printer.print_diagnostic(3, 'initializing symbol pool...')
+        self.symbols = SymbolPool.SymbolPool()
+        # Initialize the scene
+        self.printer.print_diagnostic(3, 'initializing empty scene...')
+        self.scene = { 
+            'objects' : [ ],
+            'dynamics' : [ ], 
+            'attachments' : { },
+            'fragments' : [],
+            'system' : [],
+            'refs' : {},
+            'equations' : [],
+        }
+        # Loop through all statements to load the scene
+        self.printer.print_diagnostic(3, 'loading scene...')
+        while True:
+            stmt = scene_loader.nextStmt()
+            self.printer.print_diagnostic(4, 'processing statement...')
+            if stmt == None:
+                break
+            stype = stmt['type']
+            data = stmt['data']
+            name = data['name']
+            props = stmt.get('properties', {})
+            aliases = stmt.get('aliases', {})
+            # Add the properties to the SymbolPool
+            # before the creation of the object or dynamic
+            for prop, val in props.items():
+                # See if val can be converted to a number
+                try:
+                    val = float(val)
+                    val = int(val)
+                except ValueError:
+                    pass
+                self.symbols.addReplacement(name, prop, val)
+            if stype == 'object':
+                self.printer.print_diagnostic(4, 'statement is object.')
+                self.loadObject(name, props, data, aliases)
+            elif stype == 'dynamic':
+                self.printer.print_diagnostic(4, 'statement is dynamic.')
+                self.loadDynamic(name, props, data, aliases)
+            elif stype == 'globals':
+                self.loadGlobals(name, aliases)
+            else:
+                raise Exception('unknown statement type %s' % stype)
+        self.printer.print_diagnostic(3, 'scene loaded.')
+        # Solve the system
+        self.solve()
+
+    def solve(self):
+        self.solveAssembly()
+        self.solveIC()
+        self.solveRefFrames()
+        self.solveEquations()
+
+    def solveAssembly(self):
+        self.printer.print_diagnostic(3, 'processing system...')
+        # System of equations assembly
+        self.printer.print_diagnostic(3, 'assembling system fragments...')
+        for obj in self.scene['objects']:
+            if obj['tr.mass'] == 0 and obj['rt.mass'] == 0:
+                self.printer.print_diagnostic(3, 'object %s has no mass or moment of inertia and will be ignored.' % obj['$.name'])
+                continue
+            expr = {
+                'object' : obj,
+                'rhs' : [dyn.getDExpr(obj)+(dyn,) for dyn in self.scene['attachments'][obj['$.name']]]
+            }
+            self.printer.print_diagnostic(4, '%s - %d fragments (%s).' % (obj['$.name'], len(expr['rhs']), 
+                ', '.join([dyn[-1].name for dyn in expr['rhs']])))
+            self.scene['fragments'].append(expr)
+
+    def solveIC(self):
+        # Initial conditions
+        self.printer.print_diagnostic(3, 'applying initial conditions... skipped') # TODO: change this
+
+    def solveRefFrames(self):
+        # Reference frames
+        self.printer.print_diagnostic(3, 'deducing reference frames...')
+        for expr in self.scene['fragments']:
+            obj = expr['object']
+            if len(expr['rhs']) == 0:
+                self.printer.print_diagnostic(2, '%s has no dynamics associated.' % obj['$.name'])
+                rmode = 0
+                tmode = 0
+                angle = 0
+                dir = 0
+            else:
+                cx = isTimeConstant(obj['tr.x'], self.symbols)
+                cy = isTimeConstant(obj['tr.y'], self.symbols)
+                ca = isTimeConstant(obj['rt.angle'], self.symbols)
+                if cx and cy and ca:
+                    # All axis of movement are locked (all motion variables are constants)
+                    self.printer.print_diagnostic(2, '%s is fully locked.' % obj['$.name'])
+                    rmode = 0
+                    tmode = 0
+                    angle = 0
+                    dir = 1
+                else:
+                    rmode = 1
+                    tmode = 2
+                    angle = 0
+                    dir = 1
+                    # See if rotation is locked
+                    #if ca:
+                    #    if obj['rt.mass'] != 0:
+                    #        self.printer.print_diagnostic(2, '%s has no rotation but has moment of inertia.' % obj['$.name'])
+                    #    rmode = 0
+                    #    dir = 0
+                    #else:
+                    #    rmode = 1
+                    #    dir = 1
+                    ## Deduce translations
+                    #if cx and cy:
+                    #    if obj['tr.mass'] != 0:
+                    #        self.printer.print_diagnostic(2, '%s has no translation but has mass.' % obj['$.name'])
+                    #    tmode = 0
+                    #    angle = 0
+                    #elif cx:
+                    #    # Translation along x axis
+                    #    tmode = 1
+                    #    angle = sympy.pi / 2
+                    #elif cy:
+                    #    # Translation along y axis
+                    #    tmode = 1
+                    #    angle = 0
+                    #else:
+                    #    # xy free, deduce from dynamics
+                    #    # Check if a 2D ref frame is necessary
+                    #    # for that all forces must be aligned on the same
+                    #    # axis and the angle cannot vary with time
+                    #    angle = expr['rhs'][0][1]
+                    #    if not isTimeConstant(angle, self.symbols):
+                    #        tmode = 2
+                    #        angle = 0
+                    #    else:
+                    #        tmode = 1
+                    #        for rhs in expr['rhs'][1:]:
+                    #            # simplification of cross product for unit vectors
+                    #            # to evaluate if two angles form parallel vectors
+                    #            a = rhs[1]
+                    #            if isTimeConstant(a, self.symbols) == False or sympy.sin(sympy.simplify(angle-a)) != 0:
+                    #                angle = 0
+                    #                tmode = 2
+                    #                break
+            self.printer.print_diagnostic(4, '%s - %d translation DOF (rotated by %s), %d rotation DOF (%s).' % 
+                (obj['$.name'], tmode, str(angle), rmode, 'CCW' if dir == 1 else 'CW'))
+            self.scene['refs'][obj['$.name']] = (tmode, rmode, angle, dir)
+
+    def solveEquations(self):
+        # System of equations
+        self.printer.print_diagnostic(3, 'Finishing system of equations...')
+        for expr in self.scene['fragments']:
+            obj = expr['object']
+            rftmode, rfrmode, rfangle, rfdir = self.scene['refs'][obj['$.name']]
+            rhsx = 0
+            rhsy = 0
+            rhst = 0
+            for i in expr['rhs']:
+                force = i[0]
+                dyn = i[2]
+                angle = i[1]
+                # Compute the force components
+                if angle != None:
+                    if rftmode != 0:
+                        x = sympy.simplify(force*sympy.sin(i[1]))
+                        y = sympy.simplify(force*sympy.cos(i[1]))
+                        if rftmode == 1:
+                            rhsx += dyn.simplify1DD(x)
+                        elif rftmode == 2:
+                            rhsx += x
+                            rhsy += y
+                    if rfrmode != 0:
+                        # Compute the torque components
+                        atd, ata = dyn.getAttachment(obj, 'p')
+                        # Compute the torque angle
+                        tangle = ata + sympy.pi / 2
+                        # Compute the projection of the force onto the torque direction
+                        torque = sympy.simplify(force*sympy.cos(angle - tangle))
+                        rhst += torque
+                else:
+                    # The force is actually a torque...
+                    rhst += force
+                    # Well this is weird...
+                    if obj['rt.mass'] == 0:
+                        self.printer.print_diagnostic(2, 'pure torque from %s applied to %s which has no moment of inertia.' % (dyn.name, obj['$.name']))
+            # Append the translation equations 
+            if rftmode != 0:
+                if obj['tr.mass'] == 0:
+                    self.printer.print_diagnostic(3, 'ignoring translational equations for body %s bacause it has no mass.' % obj['$.name'])
+                else:
+                    if rftmode == 1:
+                        self.scene['equations'].append(sympy.Eq(obj['tr.mass']*sympy.Derivative(obj['tr.x'], 
+                            Globals.time(self.symbols), Globals.time(self.symbols)), rhsx))
+                    elif rftmode == 2:
+                        self.scene['equations'].append(sympy.Eq(obj['tr.mass']*sympy.Derivative(obj['tr.x'], 
+                            Globals.time(self.symbols), Globals.time(self.symbols)), rhsx))
+                        self.scene['equations'].append(sympy.Eq(obj['tr.mass']*sympy.Derivative(obj['tr.y'], 
+                            Globals.time(self.symbols), Globals.time(self.symbols)), rhsy))
+                    else:
+                        raise Exception('unknown reference frame mode')
+            # Append the rotation equations 
+            if rfrmode != 0:
+                if obj['rt.mass'] == 0:
+                    self.printer.print_diagnostic(3, 'ignoring rotational equations for body %s bacause it has no moment of inertia.' % obj['$.name'])
+                else:
+                    if rfrmode == 1:
+                        self.scene['equations'].append(sympy.Eq(obj['rt.mass']*sympy.Derivative(obj['rt.angle'], 
+                            Globals.time(self.symbols), Globals.time(self.symbols)), rhst))
+                    else:
+                        raise Exception('unknown reference frame mode')
+        seq = []
+        for eq in self.scene['equations']:
+            seq.append(str(eq))
+        self.printer.print_diagnostic(3, 'system ready.')
