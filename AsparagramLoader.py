@@ -168,8 +168,7 @@ class AsparagramLoader(asparagramVisitor):
     def visitRlPos(self, ctx:asparagramParser.RlPosContext):
         x = float(ctx.getChild(0).getText())
         y = float(ctx.getChild(2).getText())
-        a = float(ctx.getChild(4).getText())
-        return (x, y, a)
+        return (x, y)
 
 
     # Visit a parse tree produced by asparagramParser#rlNPropList.

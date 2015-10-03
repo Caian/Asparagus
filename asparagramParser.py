@@ -6,7 +6,7 @@ from io import StringIO
 def serializedATN():
     with StringIO() as buf:
         buf.write("\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\31")
-        buf.write("\u00a1\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
+        buf.write("\u009f\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
         buf.write("\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4\f\t\f\4\r\t\r\4\16")
         buf.write("\t\16\4\17\t\17\4\20\t\20\4\21\t\21\3\2\7\2$\n\2\f\2\16")
         buf.write("\2\'\13\2\3\3\3\3\5\3+\n\3\3\4\3\4\3\4\3\4\3\4\3\4\3\4")
@@ -15,51 +15,50 @@ def serializedATN():
         buf.write("\5\6\5N\n\5\r\5\16\5O\3\5\7\5S\n\5\f\5\16\5V\13\5\3\5")
         buf.write("\3\5\3\6\3\6\3\6\5\6]\n\6\3\7\3\7\5\7a\n\7\3\b\3\b\3\b")
         buf.write("\3\b\3\t\3\t\3\t\3\t\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3")
-        buf.write("\13\3\13\3\13\3\13\3\13\3\13\3\f\3\f\3\f\3\f\3\f\3\f\3")
-        buf.write("\f\3\f\7\f\u0081\n\f\f\f\16\f\u0084\13\f\3\r\3\r\3\r\7")
-        buf.write("\r\u0089\n\r\f\r\16\r\u008c\13\r\3\16\3\16\3\17\3\17\3")
-        buf.write("\17\3\17\3\17\3\17\3\17\3\17\3\17\5\17\u0099\n\17\3\20")
-        buf.write("\3\20\3\21\3\21\3\21\3\21\3\21\2\2\22\2\4\6\b\n\f\16\20")
-        buf.write("\22\24\26\30\32\34\36 \2\5\4\2\20\20\27\27\3\2\26\30\3")
-        buf.write("\2\n\13\u009d\2%\3\2\2\2\4*\3\2\2\2\6,\3\2\2\2\bB\3\2")
-        buf.write("\2\2\n\\\3\2\2\2\f`\3\2\2\2\16b\3\2\2\2\20f\3\2\2\2\22")
-        buf.write("j\3\2\2\2\24r\3\2\2\2\26x\3\2\2\2\30\u0085\3\2\2\2\32")
-        buf.write("\u008d\3\2\2\2\34\u008f\3\2\2\2\36\u009a\3\2\2\2 \u009c")
-        buf.write("\3\2\2\2\"$\5\4\3\2#\"\3\2\2\2$\'\3\2\2\2%#\3\2\2\2%&")
-        buf.write("\3\2\2\2&\3\3\2\2\2\'%\3\2\2\2(+\5\6\4\2)+\5\b\5\2*(\3")
-        buf.write("\2\2\2*)\3\2\2\2+\5\3\2\2\2,-\7\7\2\2-.\7\27\2\2./\7\16")
-        buf.write("\2\2/\60\7\22\2\2\60\61\5\24\13\2\61\62\7\23\2\2\62\63")
-        buf.write("\7\f\2\2\638\7\27\2\2\64\65\7\22\2\2\65\66\5\26\f\2\66")
-        buf.write("\67\7\23\2\2\679\3\2\2\28\64\3\2\2\289\3\2\2\29=\3\2\2")
-        buf.write("\2:<\5\n\6\2;:\3\2\2\2<?\3\2\2\2=;\3\2\2\2=>\3\2\2\2>")
-        buf.write("@\3\2\2\2?=\3\2\2\2@A\7\17\2\2A\7\3\2\2\2BC\7\b\2\2CD")
-        buf.write("\7\27\2\2DE\7\f\2\2EJ\7\27\2\2FG\7\22\2\2GH\5\26\f\2H")
-        buf.write("I\7\23\2\2IK\3\2\2\2JF\3\2\2\2JK\3\2\2\2KM\3\2\2\2LN\5")
-        buf.write("\34\17\2ML\3\2\2\2NO\3\2\2\2OM\3\2\2\2OP\3\2\2\2PT\3\2")
-        buf.write("\2\2QS\5\f\7\2RQ\3\2\2\2SV\3\2\2\2TR\3\2\2\2TU\3\2\2\2")
-        buf.write("UW\3\2\2\2VT\3\2\2\2WX\7\17\2\2X\t\3\2\2\2Y]\5\16\b\2")
-        buf.write("Z]\5\20\t\2[]\5\22\n\2\\Y\3\2\2\2\\Z\3\2\2\2\\[\3\2\2")
-        buf.write("\2]\13\3\2\2\2^a\5\16\b\2_a\5\20\t\2`^\3\2\2\2`_\3\2\2")
-        buf.write("\2a\r\3\2\2\2bc\7\3\2\2cd\5\30\r\2de\7\27\2\2e\17\3\2")
-        buf.write("\2\2fg\7\4\2\2gh\5\30\r\2hi\5\32\16\2i\21\3\2\2\2jk\7")
-        buf.write("\5\2\2kl\5\30\r\2lm\7\16\2\2mn\5\32\16\2no\7\6\2\2op\7")
-        buf.write("\r\2\2pq\7\27\2\2q\23\3\2\2\2rs\7\26\2\2st\7\24\2\2tu")
-        buf.write("\7\26\2\2uv\7\24\2\2vw\7\26\2\2w\25\3\2\2\2xy\5\30\r\2")
-        buf.write("yz\7\21\2\2z\u0082\7\26\2\2{|\7\24\2\2|}\5\30\r\2}~\7")
-        buf.write("\21\2\2~\177\7\26\2\2\177\u0081\3\2\2\2\u0080{\3\2\2\2")
-        buf.write("\u0081\u0084\3\2\2\2\u0082\u0080\3\2\2\2\u0082\u0083\3")
-        buf.write("\2\2\2\u0083\27\3\2\2\2\u0084\u0082\3\2\2\2\u0085\u008a")
-        buf.write("\t\2\2\2\u0086\u0087\7\25\2\2\u0087\u0089\7\27\2\2\u0088")
-        buf.write("\u0086\3\2\2\2\u0089\u008c\3\2\2\2\u008a\u0088\3\2\2\2")
-        buf.write("\u008a\u008b\3\2\2\2\u008b\31\3\2\2\2\u008c\u008a\3\2")
-        buf.write("\2\2\u008d\u008e\t\3\2\2\u008e\33\3\2\2\2\u008f\u0090")
-        buf.write("\7\t\2\2\u0090\u0091\7\r\2\2\u0091\u0098\7\27\2\2\u0092")
-        buf.write("\u0093\7\16\2\2\u0093\u0094\5\36\20\2\u0094\u0095\7\22")
-        buf.write("\2\2\u0095\u0096\5 \21\2\u0096\u0097\7\23\2\2\u0097\u0099")
-        buf.write("\3\2\2\2\u0098\u0092\3\2\2\2\u0098\u0099\3\2\2\2\u0099")
-        buf.write("\35\3\2\2\2\u009a\u009b\t\4\2\2\u009b\37\3\2\2\2\u009c")
-        buf.write("\u009d\5\32\16\2\u009d\u009e\7\24\2\2\u009e\u009f\5\32")
-        buf.write("\16\2\u009f!\3\2\2\2\16%*8=JOT\\`\u0082\u008a\u0098")
+        buf.write("\13\3\13\3\13\3\13\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\7\f")
+        buf.write("\177\n\f\f\f\16\f\u0082\13\f\3\r\3\r\3\r\7\r\u0087\n\r")
+        buf.write("\f\r\16\r\u008a\13\r\3\16\3\16\3\17\3\17\3\17\3\17\3\17")
+        buf.write("\3\17\3\17\3\17\3\17\5\17\u0097\n\17\3\20\3\20\3\21\3")
+        buf.write("\21\3\21\3\21\3\21\2\2\22\2\4\6\b\n\f\16\20\22\24\26\30")
+        buf.write("\32\34\36 \2\5\4\2\20\20\27\27\3\2\26\30\3\2\n\13\u009b")
+        buf.write("\2%\3\2\2\2\4*\3\2\2\2\6,\3\2\2\2\bB\3\2\2\2\n\\\3\2\2")
+        buf.write("\2\f`\3\2\2\2\16b\3\2\2\2\20f\3\2\2\2\22j\3\2\2\2\24r")
+        buf.write("\3\2\2\2\26v\3\2\2\2\30\u0083\3\2\2\2\32\u008b\3\2\2\2")
+        buf.write("\34\u008d\3\2\2\2\36\u0098\3\2\2\2 \u009a\3\2\2\2\"$\5")
+        buf.write("\4\3\2#\"\3\2\2\2$\'\3\2\2\2%#\3\2\2\2%&\3\2\2\2&\3\3")
+        buf.write("\2\2\2\'%\3\2\2\2(+\5\6\4\2)+\5\b\5\2*(\3\2\2\2*)\3\2")
+        buf.write("\2\2+\5\3\2\2\2,-\7\7\2\2-.\7\27\2\2./\7\16\2\2/\60\7")
+        buf.write("\22\2\2\60\61\5\24\13\2\61\62\7\23\2\2\62\63\7\f\2\2\63")
+        buf.write("8\7\27\2\2\64\65\7\22\2\2\65\66\5\26\f\2\66\67\7\23\2")
+        buf.write("\2\679\3\2\2\28\64\3\2\2\289\3\2\2\29=\3\2\2\2:<\5\n\6")
+        buf.write("\2;:\3\2\2\2<?\3\2\2\2=;\3\2\2\2=>\3\2\2\2>@\3\2\2\2?")
+        buf.write("=\3\2\2\2@A\7\17\2\2A\7\3\2\2\2BC\7\b\2\2CD\7\27\2\2D")
+        buf.write("E\7\f\2\2EJ\7\27\2\2FG\7\22\2\2GH\5\26\f\2HI\7\23\2\2")
+        buf.write("IK\3\2\2\2JF\3\2\2\2JK\3\2\2\2KM\3\2\2\2LN\5\34\17\2M")
+        buf.write("L\3\2\2\2NO\3\2\2\2OM\3\2\2\2OP\3\2\2\2PT\3\2\2\2QS\5")
+        buf.write("\f\7\2RQ\3\2\2\2SV\3\2\2\2TR\3\2\2\2TU\3\2\2\2UW\3\2\2")
+        buf.write("\2VT\3\2\2\2WX\7\17\2\2X\t\3\2\2\2Y]\5\16\b\2Z]\5\20\t")
+        buf.write("\2[]\5\22\n\2\\Y\3\2\2\2\\Z\3\2\2\2\\[\3\2\2\2]\13\3\2")
+        buf.write("\2\2^a\5\16\b\2_a\5\20\t\2`^\3\2\2\2`_\3\2\2\2a\r\3\2")
+        buf.write("\2\2bc\7\3\2\2cd\5\30\r\2de\7\27\2\2e\17\3\2\2\2fg\7\4")
+        buf.write("\2\2gh\5\30\r\2hi\5\32\16\2i\21\3\2\2\2jk\7\5\2\2kl\5")
+        buf.write("\30\r\2lm\7\16\2\2mn\5\32\16\2no\7\6\2\2op\7\r\2\2pq\7")
+        buf.write("\27\2\2q\23\3\2\2\2rs\7\26\2\2st\7\24\2\2tu\7\26\2\2u")
+        buf.write("\25\3\2\2\2vw\5\30\r\2wx\7\21\2\2x\u0080\7\26\2\2yz\7")
+        buf.write("\24\2\2z{\5\30\r\2{|\7\21\2\2|}\7\26\2\2}\177\3\2\2\2")
+        buf.write("~y\3\2\2\2\177\u0082\3\2\2\2\u0080~\3\2\2\2\u0080\u0081")
+        buf.write("\3\2\2\2\u0081\27\3\2\2\2\u0082\u0080\3\2\2\2\u0083\u0088")
+        buf.write("\t\2\2\2\u0084\u0085\7\25\2\2\u0085\u0087\7\27\2\2\u0086")
+        buf.write("\u0084\3\2\2\2\u0087\u008a\3\2\2\2\u0088\u0086\3\2\2\2")
+        buf.write("\u0088\u0089\3\2\2\2\u0089\31\3\2\2\2\u008a\u0088\3\2")
+        buf.write("\2\2\u008b\u008c\t\3\2\2\u008c\33\3\2\2\2\u008d\u008e")
+        buf.write("\7\t\2\2\u008e\u008f\7\r\2\2\u008f\u0096\7\27\2\2\u0090")
+        buf.write("\u0091\7\16\2\2\u0091\u0092\5\36\20\2\u0092\u0093\7\22")
+        buf.write("\2\2\u0093\u0094\5 \21\2\u0094\u0095\7\23\2\2\u0095\u0097")
+        buf.write("\3\2\2\2\u0096\u0090\3\2\2\2\u0096\u0097\3\2\2\2\u0097")
+        buf.write("\35\3\2\2\2\u0098\u0099\t\4\2\2\u0099\37\3\2\2\2\u009a")
+        buf.write("\u009b\5\32\16\2\u009b\u009c\7\24\2\2\u009c\u009d\5\32")
+        buf.write("\16\2\u009d!\3\2\2\2\16%*8=JOT\\`\u0080\u0088\u0096")
         return buf.getvalue()
 
 
@@ -842,11 +841,8 @@ class asparagramParser ( Parser ):
             else:
                 return self.getToken(asparagramParser.TKNUM, i)
 
-        def TKCOM(self, i:int=None):
-            if i is None:
-                return self.getTokens(asparagramParser.TKCOM)
-            else:
-                return self.getToken(asparagramParser.TKCOM, i)
+        def TKCOM(self):
+            return self.getToken(asparagramParser.TKCOM, 0)
 
         def getRuleIndex(self):
             return asparagramParser.RULE_rlPos
@@ -879,10 +875,6 @@ class asparagramParser ( Parser ):
             self.state = 113
             self.match(asparagramParser.TKCOM)
             self.state = 114
-            self.match(asparagramParser.TKNUM)
-            self.state = 115
-            self.match(asparagramParser.TKCOM)
-            self.state = 116
             self.match(asparagramParser.TKNUM)
         except RecognitionException as re:
             localctx.exception = re
@@ -950,25 +942,25 @@ class asparagramParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 118
+            self.state = 116
             self.rlProperty()
-            self.state = 119
+            self.state = 117
             self.match(asparagramParser.TKEQ)
-            self.state = 120
+            self.state = 118
             self.match(asparagramParser.TKNUM)
-            self.state = 128
+            self.state = 126
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==asparagramParser.TKCOM:
-                self.state = 121
+                self.state = 119
                 self.match(asparagramParser.TKCOM)
-                self.state = 122
+                self.state = 120
                 self.rlProperty()
-                self.state = 123
+                self.state = 121
                 self.match(asparagramParser.TKEQ)
-                self.state = 124
+                self.state = 122
                 self.match(asparagramParser.TKNUM)
-                self.state = 130
+                self.state = 128
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
@@ -1028,21 +1020,21 @@ class asparagramParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 131
+            self.state = 129
             _la = self._input.LA(1)
             if not(_la==asparagramParser.TKLEAD or _la==asparagramParser.TKID):
                 self._errHandler.recoverInline(self)
             else:
                 self.consume()
-            self.state = 136
+            self.state = 134
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==asparagramParser.TKDOT:
-                self.state = 132
+                self.state = 130
                 self.match(asparagramParser.TKDOT)
-                self.state = 133
+                self.state = 131
                 self.match(asparagramParser.TKID)
-                self.state = 138
+                self.state = 136
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
@@ -1096,7 +1088,7 @@ class asparagramParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 139
+            self.state = 137
             _la = self._input.LA(1)
             if not((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << asparagramParser.TKNUM) | (1 << asparagramParser.TKID) | (1 << asparagramParser.TKEXPR))) != 0)):
                 self._errHandler.recoverInline(self)
@@ -1169,24 +1161,24 @@ class asparagramParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 141
+            self.state = 139
             self.match(asparagramParser.TKCONN)
-            self.state = 142
+            self.state = 140
             self.match(asparagramParser.TKTO)
-            self.state = 143
+            self.state = 141
             self.match(asparagramParser.TKID)
-            self.state = 150
+            self.state = 148
             _la = self._input.LA(1)
             if _la==asparagramParser.TKAT:
-                self.state = 144
+                self.state = 142
                 self.match(asparagramParser.TKAT)
-                self.state = 145
+                self.state = 143
                 self.rlRef()
-                self.state = 146
+                self.state = 144
                 self.match(asparagramParser.TKLPAR)
-                self.state = 147
+                self.state = 145
                 self.rlOff()
-                self.state = 148
+                self.state = 146
                 self.match(asparagramParser.TKRPAR)
 
 
@@ -1237,7 +1229,7 @@ class asparagramParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 152
+            self.state = 150
             _la = self._input.LA(1)
             if not(_la==asparagramParser.TKRECT or _la==asparagramParser.TKPOL):
                 self._errHandler.recoverInline(self)
@@ -1293,11 +1285,11 @@ class asparagramParser ( Parser ):
         self.enterRule(localctx, 30, self.RULE_rlOff)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 154
+            self.state = 152
             self.rlValue()
-            self.state = 155
+            self.state = 153
             self.match(asparagramParser.TKCOM)
-            self.state = 156
+            self.state = 154
             self.rlValue()
         except RecognitionException as re:
             localctx.exception = re

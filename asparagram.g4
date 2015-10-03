@@ -55,7 +55,7 @@ rlPlaceStmt : TKPLC rlProperty TKAT rlValue TKREL TKTO TKID
 
 // Position vector: x, y, angle
 
-rlPos : TKNUM TKCOM TKNUM TKCOM TKNUM
+rlPos : TKNUM TKCOM TKNUM
       ;
 
 // Property list: prop1=val1,prop2=val2,...
