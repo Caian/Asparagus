@@ -19,6 +19,7 @@
 
 import sys, UI
 from T3Engine import T3Engine
+from AsparagramLoader import AsparagramLoader
 
 class dummy_loader():
     def __init__(self):
@@ -219,8 +220,9 @@ class dummy_loader():
 
 def main():
     printer = UI.init()
+    loader = AsparagramLoader(sys.argv[1])
     engine = T3Engine(printer)
-    engine.load(dummy_loader())
+    engine.load(loader)
     sys.exit(UI.run())
 
 if __name__ == '__main__':
