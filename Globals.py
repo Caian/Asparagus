@@ -45,6 +45,15 @@ def isTimeConstant(s, symbols):
 def no_alias(t):
     return t
 
+def getObjName(name):
+    return name
+
+def getAttachProp(objname, prop):
+    return 'attach.%s.%s' % (objname, prop)
+
+def getPropString(objname, prop):
+    return '%s.%s' % (objname, prop)
+
 def norm2d(a):
     return sympy.simplify(sympy.sqrt(a[0]**2+a[1]**2))
 

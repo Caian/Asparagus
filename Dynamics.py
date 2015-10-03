@@ -31,22 +31,26 @@ class Dynamic:
 
     def mkattach(self, obj, mode = 'p'):
         if mode == 'p':
-            d = self.symbols.getSymbol(self.name, 'attach.%s.d' % obj['$.name'], nonnegative=True)
+            dname = Globals.getAttachProp(obj['$.name'], 'd')
+            tname = Globals.getAttachProp(obj['$.name'], 'theta')
+            d = self.symbols.getSymbol(self.name, dname, nonnegative=True)
             # Without moment of inertia, the angle of the attachment will be constant 
             if obj['rt.mass'] == 0:
-                t = self.symbols.getSymbol(self.name, 'attach.%s.theta' % obj['$.name'])
+                t = self.symbols.getSymbol(self.name, tname)
             else:
-                t = self.symbols.getFunction(self.name, 'attach.%s.theta' % obj['$.name'], [Globals.time(self.symbols)])
+                t = self.symbols.getFunction(self.name, tname, [Globals.time(self.symbols)])
             # (distance from center of mass, angle)
             return (d, t, mode)
         elif mode == 'r':
+            xname = Globals.getAttachProp(obj['$.name'], 'x')
+            yname = Globals.getAttachProp(obj['$.name'], 'y')
             # Without moment of inertia, the attachment position will be constant 
             if obj['rt.mass'] == 0:
-                x = self.symbols.getSymbol(self.name, 'attach.%s.x' % obj['$.name'])
-                y = self.symbols.getSymbol(self.name, 'attach.%s.y' % obj['$.name'])
+                x = self.symbols.getSymbol(self.name, xname)
+                y = self.symbols.getSymbol(self.name, yname)
             else:
-                x = self.symbols.getFunction(self.name, 'attach.%s.x' % obj['$.name'], [Globals.time(self.symbols)])
-                y = self.symbols.getFunction(self.name, 'attach.%s.y' % obj['$.name'], [Globals.time(self.symbols)])
+                x = self.symbols.getFunction(self.name, xname, [Globals.time(self.symbols)])
+                y = self.symbols.getFunction(self.name, yname, [Globals.time(self.symbols)])
             # (x distance from center of mass, y distance from center of mass)
             return (x, y, mode)
         else:
@@ -96,11 +100,11 @@ class Dynamic:
 # One-body force that does not depend on any variable 
 # of the system other than, possibly, time
 class ForceDynamic(Dynamic):
-    def __init__(self, name, obj, symbols):
+    def __init__(self, name, att, symbols):
         Dynamic.__init__(self, name, symbols)
         self.theta = self.symbols.getSymbol(self.name, 'theta')
-        self.obj = obj
-        self.att = self.mkattach(obj)
+        self.obj = att[0]
+        self.att = self.mkattach(att[0], att[1])
 
     def getFSym(self):
         # Not actually nonnegative, but makes analysis easier
@@ -141,12 +145,12 @@ class WeightDynamic(Dynamic):
         
 # Base class for dynamics that connect two objects
 class PairDynamic(Dynamic):
-    def __init__(self, name, obja, objb, symbols):
+    def __init__(self, name, atta, attb, symbols):
         Dynamic.__init__(self, name, symbols)
-        self.obja = obja
-        self.objb = objb
-        self.atta = self.mkattach(obja)
-        self.attb = self.mkattach(objb)
+        self.obja = atta[0]
+        self.objb = attb[0]
+        self.atta = self.mkattach(atta[0], atta[1])
+        self.attb = self.mkattach(attb[0], attb[1])
 
     def getAttachment(self, obj, mode):
         # (distance from center of mass, angle)
@@ -171,8 +175,8 @@ class PairDynamic(Dynamic):
 # Dynamic representing a rigid connection between two bodies
 # where the traction force is a free variable
 class RodDynamic(PairDynamic):
-    def __init__(self, name, obja, objb, symbols):
-        PairDynamic.__init__(self, name, obja, objb, symbols)
+    def __init__(self, name, atta, attb, symbols):
+        PairDynamic.__init__(self, name, atta, attb, symbols)
         self.l = self.symbols.getSymbol(self.name, 'l', nonnegative=True)
         self.thetaa = self.symbols.getFunction(self.name, 'thetaa', [Globals.time(self.symbols)])
         self.thetab = self.thetaa + sympy.pi
@@ -227,8 +231,8 @@ class RodDynamic(PairDynamic):
 # Base class for rod dynamics where the traction force 
 # may be a function of the position of the bodies
 class ActiveDynamic(RodDynamic):
-    def __init__(self, name, obja, objb, symbols):
-        RodDynamic.__init__(self, name, obja, objb, symbols)
+    def __init__(self, name, atta, attb, symbols):
+        RodDynamic.__init__(self, name, atta, attb, symbols)
         self.d = self.symbols.getFunction(self.name, 'd', [Globals.time(self.symbols)])
     
     def getDSym(self):
@@ -247,8 +251,8 @@ class ActiveDynamic(RodDynamic):
 # Spring Dynamic, where the traction force is a 
 # function of the position of the bodies
 class SpringDynamic(ActiveDynamic):
-    def __init__(self, name, obja, objb, symbols):
-        ActiveDynamic.__init__(self, name, obja, objb, symbols)
+    def __init__(self, name, atta, attb, symbols):
+        ActiveDynamic.__init__(self, name, atta, attb, symbols)
         self.k = self.symbols.getSymbol(self.name, 'k', nonnegative=True)
         
     def getTSym(self):
@@ -257,8 +261,8 @@ class SpringDynamic(ActiveDynamic):
 # Spring Dynamic, where the traction force is a 
 # function of the velocity of the bodies
 class DampenerDynamic(ActiveDynamic):
-    def __init__(self, name, obja, objb, symbols):
-        ActiveDynamic.__init__(self, name, obja, objb, symbols)
+    def __init__(self, name, atta, attb, symbols):
+        ActiveDynamic.__init__(self, name, atta, attb, symbols)
         self.b = self.symbols.getSymbol(self.name, 'b', nonnegative=True)
         
     def getTSym(self):

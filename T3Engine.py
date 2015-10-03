@@ -50,20 +50,17 @@ class T3Engine():
         a = self.aliases
         sympy.Basic.__str__ = lambda self: AliasPrinter(a).doprint(self)
 
-    def mkobject(self, name, tr0):
+    def mkobject(self, name):
         s = str(name)
         return {
-            '$.name' : s,
+            '$.name' : Globals.getObjName(s),
             'tr' : self.symbols.getFunction(s, 'tr', [Globals.time(self.symbols)]),
             'tr.x' : self.symbols.getFunction(s, 'tr.x', [Globals.time(self.symbols)]),
             'tr.y' : self.symbols.getFunction(s, 'tr.y', [Globals.time(self.symbols)]),
             'tr.mass' : self.symbols.getSymbol(s, 'tr.mass', nonnegative=True),
             'tr.frame' : {
-                'angle' : tr0[2],
                 'theta' : self.symbols.getSymbol(s, 'tr.theta')
             },
-            'tr.x0' : tr0[0],
-            'tr.y0' : tr0[1],
             'rt.mass' : self.symbols.getSymbol(s, 'rt.mass', nonnegative=True),
             'rt.angle' : self.symbols.getFunction(s, 'rt.angle', [Globals.time(self.symbols)]),
             'rt.frame' : {
@@ -81,30 +78,35 @@ class T3Engine():
         raise Exception('could not find object named %s' % name)
 
     def loadObject(self, name, props, data, aliases):
-        posx = data['posx']
-        posy = data['posy']
-        posa = data['posy']
+        pos = data['pos']
         shape = data['shape']
         label = aliases.get('$.name', name)
-        # Create a new object, redefine the name (in case it's not the 
-        # same as commanded) and, if it's not already in the scene, add it
-        obj = self.mkobject(name, (posx, posy, posa))
-        name = obj['$.name']
+
+        # Create a new object and, if it's not already in the scene, add it
+        obj = self.mkobject(name)
+        
         if self.hasObject(name):
             raise Exception('the scene already contains an object named %s' % name)
+
         self.scene['objects'].append(obj)
         self.scene['attachments'][name] = [ ]
+
         # Fill the replacement table
         for k, v in aliases.items():
             self.aliases[obj[k]] = v
+
         # Print the object
-        self.printer.print_object(name, (posx, posy), shape, label, props)
+        self.printer.print_object(name, pos, shape, label, props)
 
     def loadDynamic(self, name, props, data, aliases):
         dyn = data['dynamic']
-        bodies = [self.getObject(n) for n in data['bodies']]
+        bodies = [self.getObject(n[0]) for n in data['attach']]
+        attmodes = [n[1] if len(n) > 1 else 'p' for n in data['attach']]
+        attoffs = [n[2] if len(n) > 1 else None for n in data['attach']]
         offs = data['offset']
         showangles = props.get('showangles', False)
+
+        # A few assert funtions...
         def assert_bodies(name, n):
             if len(bodies) != n:
                 raise Exception('%s dynamic expects %d body, provided %d' % (name, n, len(bodies)))
@@ -116,64 +118,100 @@ class T3Engine():
             if alias != None: 
                 self.aliases[p] = alias
             return str(p)
+
+        # Switch the dynamic type
         if dyn == 'force':
             assert_bodies('force', 1)
             assert_offs('force', 4)
-            pos = (bodies[0]['tr.x0']+offs[0], bodies[0]['tr.y0']+offs[1],
-                   bodies[0]['tr.x0']+offs[2], bodies[0]['tr.y0']+offs[3])
-            d = Dynamics.ForceDynamic(name, bodies[0], self.symbols)
+
+            pos = (offs['x1'], offs['y1'], 
+                   offs['x2'], offs['y2'])
+
+            att = (bodies[0], attmodes[0])
+
+            d = Dynamics.ForceDynamic(name, att, self.symbols)
+
             t = aliasify('theta', d.theta)
             title = aliasify('F', d.getFSym())
+
         elif dyn == 'weight':
             # TODO ignore offset and force it to center of mass
             assert_bodies('weight', 1)
             assert_offs('weight', 4)
-            pos = (bodies[0]['tr.x0']+offs[0], bodies[0]['tr.y0']+offs[1],
-                   bodies[0]['tr.x0']+offs[2], bodies[0]['tr.y0']+offs[3])
+
+            pos = (offs['x1'], offs['y1'], 
+                   offs['x2'], offs['y2'])
+
             d = Dynamics.WeightDynamic(name, bodies[0], self.symbols)
+
             title = str(d.getFSym())
             showangles = False # Do not show theta for gravity
+
         elif dyn == 'rod':
             assert_bodies('rod', 2)
             assert_offs('rod', 4)
-            pos = (bodies[0]['tr.x0']+offs[0], bodies[0]['tr.y0']+offs[1],
-                   bodies[1]['tr.x0']+offs[2], bodies[1]['tr.y0']+offs[3])
-            d = Dynamics.RodDynamic(name, bodies[0], bodies[1], self.symbols)
+
+            pos = (offs['x1'], offs['y1'], 
+                   offs['x2'], offs['y2'])
+
+            att0 = (bodies[0], attmodes[0])
+            att1 = (bodies[1], attmodes[1])
+
+            d = Dynamics.RodDynamic(name, att0, att1, self.symbols)
+
             aliasify('l', d.l)
             t = aliasify('thetaa', d.thetaa)
             title = aliasify('T', d.getTSym())
+
         elif dyn == 'spring':
             assert_bodies('spring', 2)
             assert_offs('spring', 4)
-            pos = (bodies[0]['tr.x0']+offs[0], bodies[0]['tr.y0']+offs[1],
-                   bodies[1]['tr.x0']+offs[2], bodies[1]['tr.y0']+offs[3])
-            d = Dynamics.SpringDynamic(name, bodies[0], bodies[1], self.symbols)
+
+            pos = (offs['x1'], offs['y1'], 
+                   offs['x2'], offs['y2'])
+
+            att0 = (bodies[0], attmodes[0])
+            att1 = (bodies[1], attmodes[1])
+
+            d = Dynamics.SpringDynamic(name, att0, att1, self.symbols)
+
             aliasify('l', d.l)
             aliasify('d', d.d)
-            t = aliasify('thetaa', d.thetaa)
             aliasify('T', d.getTSym())
+            t = aliasify('thetaa', d.thetaa)
             title = aliasify('k', d.k)
+
         elif dyn == 'dampener':
             assert_bodies('dampener', 2)
             assert_offs('dampener', 4)
-            title = name
-            pos = (bodies[0]['tr.x0']+offs[0], bodies[0]['tr.y0']+offs[1],
-                   bodies[1]['tr.x0']+offs[2], bodies[1]['tr.y0']+offs[3])
-            d = Dynamics.DampenerDynamic(name, bodies[0], bodies[1], self.symbols)
+
+            pos = (offs['x1'], offs['y1'], 
+                   offs['x2'], offs['y2'])
+
+            att0 = (bodies[0], attmodes[0])
+            att1 = (bodies[1], attmodes[1])
+
+            d = Dynamics.DampenerDynamic(name, att0, att1, self.symbols)
+
             aliasify('l', d.l)
             aliasify('d', d.d)
-            t = aliasify('thetaa', d.thetaa)
             aliasify('T', d.getTSym())
+            t = aliasify('thetaa', d.thetaa)
             title = aliasify('b', d.b)
+
         else:
             raise Exception('unknown dynamic type %s' % dyn)
+
         # Add dynamic to the list of dynamic in the scene
         self.scene['dynamics'].append(d)
+
         # Add dynamic to the collection of dynamics of each body
         for body in bodies:
             self.scene['attachments'][body['$.name']].append(d)
+
         # Draw the dynamic
         self.printer.print_dynamic(name, dyn, pos, title, props)
+
         # Draw the angle of the dynamic, if specified
         if showangles:
             self.printer.print_angle(name, t)
@@ -181,15 +219,17 @@ class T3Engine():
     def loadGlobals(self, name, aliases):
         # Fill the replacement table
         for k, v in aliases.items():
-            self.aliases['%s.%s' % (name, k)] = v
+            self.aliases[Globals.getPropString(name, k)] = v
 
     def load(self, scene_loader):
         # Initialize the aliases
         self.printer.print_diagnostic(3, 'initializing alias table for symbols...')
         self.aliases.clear() 
+
         # Initialize the SymbolPool
         self.printer.print_diagnostic(3, 'initializing symbol pool...')
         self.symbols = SymbolPool.SymbolPool()
+
         # Initialize the scene
         self.printer.print_diagnostic(3, 'initializing empty scene...')
         self.scene = { 
@@ -201,6 +241,7 @@ class T3Engine():
             'refs' : {},
             'equations' : [],
         }
+
         # Loop through all statements to load the scene
         self.printer.print_diagnostic(3, 'loading scene...')
         while True:
@@ -208,14 +249,44 @@ class T3Engine():
             self.printer.print_diagnostic(4, 'processing statement...')
             if stmt == None:
                 break
+
             stype = stmt['type']
             data = stmt['data']
             name = data['name']
-            props = stmt.get('properties', {})
-            aliases = stmt.get('aliases', {})
+            props = stmt.get('properties', [])
+            aliases = stmt.get('aliases', [])
+
+            # Verify aliases
+            p = set()
+            a = {}
+
+            for alias, val in aliases:
+                # See if its already defined
+                if alias in p:
+                    self.printer.print_diagnostic(2, 'Alias %s already set for %s, later value ignored.' % (alias, name))
+
+                a[alias] = val
+                p.add(alias)
+
+            aliases = a
+
             # Add the properties to the SymbolPool
             # before the creation of the object or dynamic
-            for prop, val in props.items():
+            p = set()
+            a = {}
+
+            for prop, val, ref in props:
+                # See if its already defined
+                if prop in p:
+                    self.printer.print_diagnostic(2, 'Property %s already set for %s, later value ignored.' % (prop, name))
+
+                # Ignore relative placement here
+                if ref != None:
+                    continue
+
+                a[prop] = val
+                p.add(prop)
+
                 # See if val can be converted to a number
                 try:
                     val = float(val)
@@ -223,6 +294,10 @@ class T3Engine():
                 except ValueError:
                     pass
                 self.symbols.addReplacement(name, prop, val)
+
+            props = a
+
+            # Parse the statement content
             if stype == 'object':
                 self.printer.print_diagnostic(4, 'statement is object.')
                 self.loadObject(name, props, data, aliases)
@@ -234,6 +309,7 @@ class T3Engine():
             else:
                 raise Exception('unknown statement type %s' % stype)
         self.printer.print_diagnostic(3, 'scene loaded.')
+
         # Solve the system
         self.solve()
 
@@ -245,6 +321,7 @@ class T3Engine():
 
     def solveAssembly(self):
         self.printer.print_diagnostic(3, 'processing system...')
+
         # System of equations assembly
         self.printer.print_diagnostic(3, 'assembling system fragments...')
         for obj in self.scene['objects']:
