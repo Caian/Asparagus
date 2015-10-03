@@ -87,7 +87,7 @@ class AsparagramLoader(asparagramVisitor):
         aliases = []
         for i in range(stpos, ctx.getChildCount() - 1):
             stmt = self.visit(ctx.getChild(i))
-            (props if stmt == 'set' else aliases).append(stmt)
+            (props if stmt[0] == 'set' else aliases).append(stmt[1:])
 
         # Build the statement clause
         return {
@@ -126,7 +126,7 @@ class AsparagramLoader(asparagramVisitor):
             if stmt[0] == 'conn':
                 conn.append(stmt[1:])
             else:
-                (props if stmt == 'set' else aliases).append(stmt)
+                (props if stmt[0] == 'set' else aliases).append(stmt[1:])
 
         # Build the statement clause
         return {
