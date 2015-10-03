@@ -50,9 +50,9 @@ class AsparagramLoader(asparagramVisitor):
         self.i = 0
 
     def nextStmt(self):
-        if self.i == len(self.stmnts):
+        if self.i == len(self.stmts):
             return None
-        s = self.stmnts[self.i]
+        s = self.stmts[self.i]
         self.i += 1
         return s
 
