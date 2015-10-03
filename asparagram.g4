@@ -30,7 +30,7 @@ rlStmt : rlObjStmt
 rlObjStmt : TKOBJ TKID TKAT TKLPAR rlPos TKRPAR TKIS TKID (TKLPAR rlNPropList TKRPAR)? rlObjStmts* TKEND
           ;
 
-rlDynStmt : TKDYN TKID TKIS TKID rlConnection+ rlDynStmts* TKEND
+rlDynStmt : TKDYN TKID TKIS TKID (TKLPAR rlNPropList TKRPAR)? rlConnection+ rlDynStmts* TKEND
           ;
 
 // Second level object and dynamic statements
@@ -60,7 +60,7 @@ rlPos : TKNUM TKCOM TKNUM TKCOM TKNUM
 
 // Property list: prop1=val1,prop2=val2,...
 
-rlNPropList : rlProperty TKEQ TKNUM (TKCOM rlNPropList)?
+rlNPropList : rlProperty TKEQ TKNUM (TKCOM rlProperty TKEQ TKNUM)*
             ;
 
 // Property something.foo.bar or $.something.bar.foo
@@ -78,7 +78,7 @@ rlValue : TKID
 
 // Connection field for dynamics
 
-rlConnection : TKCONN TKTO TKID TKAT rlRef TKLPAR rlOff TKRPAR 
+rlConnection : TKCONN TKTO TKID (TKAT rlRef TKLPAR rlOff TKRPAR)?
              ;
 
 // Reference kind
