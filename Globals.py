@@ -42,6 +42,29 @@ def isTimeConstant(s, symbols):
             return False
     return True
 
+def convertAttachment(att, mode = 't'):
+    m = att[2]
+    if mode == m:
+        return (att[0], att[1], att[2])
+    elif mode == 'r':
+        if m == 'p':
+            d = att[0]
+            t = att[1]
+            return (d*sympy.sin(t), d*sympy.cos(t), mode)
+        else:
+            raise Exception('invalid attachment mode %s' % str(m))
+    elif mode == 'p':
+        if m == 'r':
+            x = att[0]
+            y = att[1]
+            # TODO remember to flip y during c->r
+            # check theta direction
+            return (sympy.sqrt(x**2+y**2), sympy.atan2(x, y), mode)
+        else:
+            raise Exception('invalid attachment mode %s' % str(m))
+    else:
+        raise Exception('invalid attachment mode %s' % str(mode))
+
 def no_alias(t):
     return t
 

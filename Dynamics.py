@@ -22,6 +22,7 @@ import Globals
 
 # Just need this for some angle inferences
 from Globals import isTimeConstant
+from Globals import convertAttachment
 
 # Base class for dynamics, contains only a name
 class Dynamic:
@@ -47,29 +48,6 @@ class Dynamic:
             y = self.symbols.getSymbol(self.name, yname)
             # (x distance from center of mass, y distance from center of mass)
             return (x, y, mode)
-        else:
-            raise Exception('invalid attachment mode %s' % str(mode))
-
-    def convertAttachment(self, att, mode = 't'):
-        m = att[2]
-        if mode == m:
-            return (att[0], att[1], att[2])
-        elif mode == 'r':
-            if m == 'p':
-                d = att[0]
-                t = att[1]
-                return (d*sympy.sin(t), d*sympy.cos(t), mode)
-            else:
-                raise Exception('invalid attachment mode %s' % str(m))
-        elif mode == 'p':
-            if m == 'r':
-                x = att[0]
-                y = att[1]
-                # TODO remember to flip y during c->r
-                # check theta direction
-                return (sympy.sqrt(x**2+y**2), sympy.atan2(x, y), mode)
-            else:
-                raise Exception('invalid attachment mode %s' % str(m))
         else:
             raise Exception('invalid attachment mode %s' % str(mode))
 
@@ -114,7 +92,7 @@ class ForceDynamic(Dynamic):
         if obj != self.obj:
             raise Exception('invalid object')
         # (distance from center of mass, angle)
-        return self.convertAttachment(self.att, mode)
+        return convertAttachment(self.att, mode)
     
 # One-body weight dynamic
 class WeightDynamic(Dynamic):
@@ -149,9 +127,9 @@ class PairDynamic(Dynamic):
     def getAttachment(self, obj, mode):
         # (distance from center of mass, angle)
         if obj == self.obja:
-            return self.convertAttachment(self.atta, mode)
+            return convertAttachment(self.atta, mode)
         if obj == self.objb:
-            return self.convertAttachment(self.attb, mode)
+            return convertAttachment(self.attb, mode)
         raise Exception('invalid object')
         
     #def getDist(self):
@@ -191,7 +169,7 @@ class RodDynamic(PairDynamic):
             raise Exception('invalid object')
         # Return the force in polar coordinates
         return (self.getTSym(), theta)
-    
+
     def getLEqns(self):
         # Algebraic Links
         d = self.getDSym()
@@ -202,23 +180,23 @@ class RodDynamic(PairDynamic):
         x2 = self.objb['tr.x']
         y2 = self.objb['tr.y']
         a1 = self.obja['rt.angle']
-        a2 = self.obja['rt.angle']
+        a2 = self.objb['rt.angle']
 
         # Convert the attachments to polar, add the body angle
         # and then reconvert to rectangular
         
-        att1 = self.convertAttachment(self.atta, 'p')
+        att1 = convertAttachment(self.atta, 'p')
         if att1[0] != 0:
             att1 = (att1[0], a1 + att1[1], att1[2])
-            i1, j1, m1 = self.convertAttachment(att1, 'r')
+            i1, j1, m1 = convertAttachment(att1, 'r')
         else:
             i1 = 0
             j1 = 0
 
-        att2 = self.convertAttachment(self.attb, 'p')
+        att2 = convertAttachment(self.attb, 'p')
         if att2[0] != 0:
             att2 = (att2[0], a2 + att2[1], att2[2])
-            i2, j2, m2 = self.convertAttachment(att2, 'r')
+            i2, j2, m2 = convertAttachment(att2, 'r')
         else:
             i2 = 0
             j2 = 0
