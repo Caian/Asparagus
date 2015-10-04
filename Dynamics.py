@@ -206,12 +206,22 @@ class RodDynamic(PairDynamic):
 
         # Convert the attachments to polar, add the body angle
         # and then reconvert to rectangular
+        
         att1 = self.convertAttachment(self.atta, 'p')
+        if att1[0] != 0:
+            att1 = (att1[0], a1 + att1[1], att1[2])
+            i1, j1, m1 = self.convertAttachment(att1, 'r')
+        else:
+            i1 = 0
+            j1 = 0
+
         att2 = self.convertAttachment(self.attb, 'p')
-        att1 = (att1[0], a1 + att1[1], att1[2])
-        att2 = (att2[0], a2 + att2[1], att2[2])
-        i1, j1, m1 = self.convertAttachment(att1, 'r')
-        i2, j2, m2 = self.convertAttachment(att2, 'r')
+        if att2[0] != 0:
+            att2 = (att2[0], a2 + att2[1], att2[2])
+            i2, j2, m2 = self.convertAttachment(att2, 'r')
+        else:
+            i2 = 0
+            j2 = 0
 
         return [
             sympy.Eq(x2, x1 + i1 + (l+d)*sympy.sin(td) - i2),

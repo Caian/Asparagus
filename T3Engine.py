@@ -119,6 +119,28 @@ class T3Engine():
                 self.aliases[p] = alias
             return str(p)
 
+        # Resolve the attachments 
+        for b, m, o in zip(bodies, attmodes, attoffs):
+            if o != None:
+                if m == 'p':
+                    ata = Globals.getAttachProp(b['$.name'], 'd')
+                    atb = Globals.getAttachProp(b['$.name'], 'theta')
+                elif m == 'r':
+                    ata = Globals.getAttachProp(b['$.name'], 'x')
+                    atb = Globals.getAttachProp(b['$.name'], 'y')
+                try:
+                    vala = float(o[0])
+                    vala = int(o[0])
+                except ValueError:
+                    pass
+                try:
+                    valb = float(o[1])
+                    valb = int(o[1])
+                except ValueError:
+                    pass
+                self.symbols.addReplacement(name, ata, vala)
+                self.symbols.addReplacement(name, atb, valb)
+
         # Switch the dynamic type
         if dyn == 'force':
             assert_bodies('force', 1)
@@ -440,11 +462,13 @@ class T3Engine():
                     if rfrmode != 0:
                         # Compute the torque components
                         atd, ata, atm = dyn.getAttachment(obj, 'p')
-                        # Compute the torque angle
-                        tangle = ata + sympy.pi / 2 + obj['rt.angle']
-                        # Compute the projection of the force onto the torque direction
-                        torque = sympy.simplify(force*sympy.cos(angle - tangle))
-                        rhst += torque
+                        if atd != 0:
+                            # Compute the torque angle
+                            tangle = ata + sympy.pi / 2 + obj['rt.angle']
+
+                            # Compute the projection of the force onto the torque direction
+                            torque = sympy.simplify(force * atd * sympy.cos(angle - tangle))
+                            rhst += torque
                 else:
                     # The force is actually a torque...
                     rhst += force
