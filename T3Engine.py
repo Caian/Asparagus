@@ -429,21 +429,26 @@ class T3Engine():
             rhsx = 0
             rhsy = 0
             rhst = 0
+            cx = isTimeConstant(obj['tr.x'], self.symbols)
+            cy = isTimeConstant(obj['tr.y'], self.symbols)
+            ca = isTimeConstant(obj['rt.angle'], self.symbols)
             for i in expr['rhs']:
                 force = i[0]
                 dyn = i[2]
                 angle = i[1]
                 # Compute the force components
                 if angle != None:
-                    if rftmode != 0:
+                    if rftmode == 1:
                         x = sympy.simplify(force*sympy.sin(i[1]))
-                        y = sympy.simplify(force*sympy.cos(i[1]))
-                        if rftmode == 1:
-                            rhsx += dyn.simplify1DD(x)
-                        elif rftmode == 2:
+                        rhsx += dyn.simplify1DD(x)
+                    elif rftmode == 2:
+                        if not cx:
+                            x = sympy.simplify(force*sympy.sin(i[1]))
                             rhsx += x
+                        if not cy:
+                            y = sympy.simplify(force*sympy.cos(i[1]))
                             rhsy += y
-                    if rfrmode != 0:
+                    if rfrmode != 0 and not ca:
                         # Compute the torque components
                         atd, ata, atm = dyn.getAttachment(obj, 'p')
                         if atd != 0:
@@ -453,7 +458,7 @@ class T3Engine():
                             # Compute the projection of the force onto the torque direction
                             torque = sympy.simplify(force * atd * sympy.cos(angle - tangle))
                             rhst += torque
-                else:
+                elif not ca:
                     # The force is actually a torque...
                     rhst += force
                     # Well this is weird...
@@ -467,11 +472,17 @@ class T3Engine():
                     if rftmode == 1:
                         self.scene['equations'].append(sympy.Eq(obj['tr.mass']*sympy.Derivative(obj['tr.x'], 
                             Globals.time(self.symbols), Globals.time(self.symbols)), rhsx))
-                    elif rftmode == 2:
-                        self.scene['equations'].append(sympy.Eq(obj['tr.mass']*sympy.Derivative(obj['tr.x'], 
-                            Globals.time(self.symbols), Globals.time(self.symbols)), rhsx))
-                        self.scene['equations'].append(sympy.Eq(obj['tr.mass']*sympy.Derivative(obj['tr.y'], 
-                            Globals.time(self.symbols), Globals.time(self.symbols)), rhsy))
+                    if rftmode == 2:
+                        if cx:
+                            self.printer.print_diagnostic(3, 'ignoring x-axis translational equation for body %s bacause it is locked.' % obj['$.name'])
+                        else:
+                            self.scene['equations'].append(sympy.Eq(obj['tr.mass']*sympy.Derivative(obj['tr.x'], 
+                                Globals.time(self.symbols), Globals.time(self.symbols)), rhsx))
+                        if cy:
+                            self.printer.print_diagnostic(3, 'ignoring y-axis translational equation for body %s bacause it is locked.' % obj['$.name'])
+                        else:
+                            self.scene['equations'].append(sympy.Eq(obj['tr.mass']*sympy.Derivative(obj['tr.y'], 
+                                Globals.time(self.symbols), Globals.time(self.symbols)), rhsy))
                     else:
                         raise Exception('unknown reference frame mode')
             # Append the rotation equations 
@@ -480,8 +491,11 @@ class T3Engine():
                     self.printer.print_diagnostic(3, 'ignoring rotational equations for body %s bacause it has no moment of inertia.' % obj['$.name'])
                 else:
                     if rfrmode == 1:
-                        self.scene['equations'].append(sympy.Eq(obj['rt.mass']*sympy.Derivative(obj['rt.angle'], 
-                            Globals.time(self.symbols), Globals.time(self.symbols)), rhst))
+                        if ca:
+                            self.printer.print_diagnostic(3, 'ignoring rotational equation for body %s bacause it is locked.' % obj['$.name'])
+                        else:
+                            self.scene['equations'].append(sympy.Eq(obj['rt.mass']*sympy.Derivative(obj['rt.angle'], 
+                                Globals.time(self.symbols), Globals.time(self.symbols)), rhst))
                     else:
                         raise Exception('unknown reference frame mode')
         # Finish with the link equations
