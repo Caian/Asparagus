@@ -19,20 +19,26 @@
 
 import sympy
 import Globals
+from sympy.parsing.sympy_parser import parse_expr
 
 class SymbolPool():
     def __init__(self):
         self.replacements = {}
 
-    def fix(self, expr):
-        return expr
+    def positify(self, expr, symbag):
+        if expr.is_Symbol:
+            symbag[expr] = sympy.Symbol(expr.name, positive=True)
+        else:
+            for arg in expr.args:
+                positify(self, arg, symbag)
 
     def addReplacement(self, objname, property, value):
             key = Globals.getPropString(objname, property)
-            #val = str(value)
-            #expr = sympy.parsing.sympy_parser.parse_expr(val)
-            #expr = self.fix(expr)
-            expr = value
+            val = str(value)
+            expr = parse_expr(val)
+            symbag = {}
+            self.positify(expr, symbag)
+            expr = expr.subs(symbag)
             self.replacements[key] = expr
 
     def getSymbol(self, objname, property, nonnegative=False):
@@ -41,7 +47,7 @@ class SymbolPool():
         if type(r) == str:
             return sympy.Symbol(key, nonnegative=nonnegative)
         else:
-            return sympy.Number(r)
+            return r
 
     def getFunction(self, objname, property, args=[], nonnegative=False):
         key = Globals.getPropString(objname, property)
@@ -57,4 +63,4 @@ class SymbolPool():
             # A replacement here means constant symbol
             return sympy.Symbol(r, nonnegative=nonnegative)
         else:
-            return sympy.Number(r)
+            return r

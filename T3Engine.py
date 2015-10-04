@@ -128,18 +128,8 @@ class T3Engine():
                 elif m == 'r':
                     ata = Globals.getAttachProp(b['$.name'], 'x')
                     atb = Globals.getAttachProp(b['$.name'], 'y')
-                try:
-                    vala = float(o[0])
-                    vala = int(o[0])
-                except ValueError:
-                    pass
-                try:
-                    valb = float(o[1])
-                    valb = int(o[1])
-                except ValueError:
-                    pass
-                self.symbols.addReplacement(name, ata, vala)
-                self.symbols.addReplacement(name, atb, valb)
+                self.symbols.addReplacement(name, ata, o[0])
+                self.symbols.addReplacement(name, atb, o[1])
 
         # Switch the dynamic type
         if dyn == 'force':
@@ -309,12 +299,6 @@ class T3Engine():
                 a[prop] = val
                 p.add(prop)
 
-                # See if val can be converted to a number
-                try:
-                    val = float(val)
-                    val = int(val)
-                except ValueError:
-                    pass
                 self.symbols.addReplacement(name, prop, val)
 
             props = a
