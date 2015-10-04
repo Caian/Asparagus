@@ -63,6 +63,24 @@ class AsparagramLoader(asparagramVisitor):
             stmts.append(self.visit(ctx.getChild(i)))
         return stmts
 
+    # Visit a parse tree produced by asparagramParser#rlGlobStmt.
+    def visitRlGlobStmt(self, ctx:asparagramParser.RlGlobStmtContext):
+        props = []
+        aliases = []
+        for i in range(1, ctx.getChildCount() - 1):
+            stmt = self.visit(ctx.getChild(i))
+            (props if stmt[0] == 'set' else aliases).append(stmt[1:])
+
+        # Build the statement clause
+        return {
+            'type' : 'globals',
+            'data' : {
+                'name' : '$global',
+            },
+            'properties' : props,
+            'aliases' : aliases
+        }
+
     # Visit a parse tree produced by asparagramParser#rlObjStmt.
     def visitRlObjStmt(self, ctx:asparagramParser.RlObjStmtContext):
         name = ctx.getChild(1).getText()

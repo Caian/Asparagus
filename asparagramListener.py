@@ -26,6 +26,15 @@ class asparagramListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by asparagramParser#rlGlobStmt.
+    def enterRlGlobStmt(self, ctx:asparagramParser.RlGlobStmtContext):
+        pass
+
+    # Exit a parse tree produced by asparagramParser#rlGlobStmt.
+    def exitRlGlobStmt(self, ctx:asparagramParser.RlGlobStmtContext):
+        pass
+
+
     # Enter a parse tree produced by asparagramParser#rlObjStmt.
     def enterRlObjStmt(self, ctx:asparagramParser.RlObjStmtContext):
         pass
@@ -41,6 +50,15 @@ class asparagramListener(ParseTreeListener):
 
     # Exit a parse tree produced by asparagramParser#rlDynStmt.
     def exitRlDynStmt(self, ctx:asparagramParser.RlDynStmtContext):
+        pass
+
+
+    # Enter a parse tree produced by asparagramParser#rlGlobStmts.
+    def enterRlGlobStmts(self, ctx:asparagramParser.RlGlobStmtsContext):
+        pass
+
+    # Exit a parse tree produced by asparagramParser#rlGlobStmts.
+    def exitRlGlobStmts(self, ctx:asparagramParser.RlGlobStmtsContext):
         pass
 
 

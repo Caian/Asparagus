@@ -5,60 +5,70 @@ from io import StringIO
 
 def serializedATN():
     with StringIO() as buf:
-        buf.write("\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\31")
-        buf.write("\u009f\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
+        buf.write("\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\32")
+        buf.write("\u00b3\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
         buf.write("\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4\f\t\f\4\r\t\r\4\16")
-        buf.write("\t\16\4\17\t\17\4\20\t\20\4\21\t\21\3\2\7\2$\n\2\f\2\16")
-        buf.write("\2\'\13\2\3\3\3\3\5\3+\n\3\3\4\3\4\3\4\3\4\3\4\3\4\3\4")
-        buf.write("\3\4\3\4\3\4\3\4\3\4\5\49\n\4\3\4\7\4<\n\4\f\4\16\4?\13")
-        buf.write("\4\3\4\3\4\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\5\5K\n\5\3")
-        buf.write("\5\6\5N\n\5\r\5\16\5O\3\5\7\5S\n\5\f\5\16\5V\13\5\3\5")
-        buf.write("\3\5\3\6\3\6\3\6\5\6]\n\6\3\7\3\7\5\7a\n\7\3\b\3\b\3\b")
-        buf.write("\3\b\3\t\3\t\3\t\3\t\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3")
-        buf.write("\13\3\13\3\13\3\13\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\7\f")
-        buf.write("\177\n\f\f\f\16\f\u0082\13\f\3\r\3\r\3\r\7\r\u0087\n\r")
-        buf.write("\f\r\16\r\u008a\13\r\3\16\3\16\3\17\3\17\3\17\3\17\3\17")
-        buf.write("\3\17\3\17\3\17\3\17\5\17\u0097\n\17\3\20\3\20\3\21\3")
-        buf.write("\21\3\21\3\21\3\21\2\2\22\2\4\6\b\n\f\16\20\22\24\26\30")
-        buf.write("\32\34\36 \2\5\4\2\20\20\27\27\3\2\26\30\3\2\n\13\u009b")
-        buf.write("\2%\3\2\2\2\4*\3\2\2\2\6,\3\2\2\2\bB\3\2\2\2\n\\\3\2\2")
-        buf.write("\2\f`\3\2\2\2\16b\3\2\2\2\20f\3\2\2\2\22j\3\2\2\2\24r")
-        buf.write("\3\2\2\2\26v\3\2\2\2\30\u0083\3\2\2\2\32\u008b\3\2\2\2")
-        buf.write("\34\u008d\3\2\2\2\36\u0098\3\2\2\2 \u009a\3\2\2\2\"$\5")
-        buf.write("\4\3\2#\"\3\2\2\2$\'\3\2\2\2%#\3\2\2\2%&\3\2\2\2&\3\3")
-        buf.write("\2\2\2\'%\3\2\2\2(+\5\6\4\2)+\5\b\5\2*(\3\2\2\2*)\3\2")
-        buf.write("\2\2+\5\3\2\2\2,-\7\7\2\2-.\7\27\2\2./\7\16\2\2/\60\7")
-        buf.write("\22\2\2\60\61\5\24\13\2\61\62\7\23\2\2\62\63\7\f\2\2\63")
-        buf.write("8\7\27\2\2\64\65\7\22\2\2\65\66\5\26\f\2\66\67\7\23\2")
-        buf.write("\2\679\3\2\2\28\64\3\2\2\289\3\2\2\29=\3\2\2\2:<\5\n\6")
-        buf.write("\2;:\3\2\2\2<?\3\2\2\2=;\3\2\2\2=>\3\2\2\2>@\3\2\2\2?")
-        buf.write("=\3\2\2\2@A\7\17\2\2A\7\3\2\2\2BC\7\b\2\2CD\7\27\2\2D")
-        buf.write("E\7\f\2\2EJ\7\27\2\2FG\7\22\2\2GH\5\26\f\2HI\7\23\2\2")
-        buf.write("IK\3\2\2\2JF\3\2\2\2JK\3\2\2\2KM\3\2\2\2LN\5\34\17\2M")
-        buf.write("L\3\2\2\2NO\3\2\2\2OM\3\2\2\2OP\3\2\2\2PT\3\2\2\2QS\5")
-        buf.write("\f\7\2RQ\3\2\2\2SV\3\2\2\2TR\3\2\2\2TU\3\2\2\2UW\3\2\2")
-        buf.write("\2VT\3\2\2\2WX\7\17\2\2X\t\3\2\2\2Y]\5\16\b\2Z]\5\20\t")
-        buf.write("\2[]\5\22\n\2\\Y\3\2\2\2\\Z\3\2\2\2\\[\3\2\2\2]\13\3\2")
-        buf.write("\2\2^a\5\16\b\2_a\5\20\t\2`^\3\2\2\2`_\3\2\2\2a\r\3\2")
-        buf.write("\2\2bc\7\3\2\2cd\5\30\r\2de\7\27\2\2e\17\3\2\2\2fg\7\4")
-        buf.write("\2\2gh\5\30\r\2hi\5\32\16\2i\21\3\2\2\2jk\7\5\2\2kl\5")
-        buf.write("\30\r\2lm\7\16\2\2mn\5\32\16\2no\7\6\2\2op\7\r\2\2pq\7")
-        buf.write("\27\2\2q\23\3\2\2\2rs\7\26\2\2st\7\24\2\2tu\7\26\2\2u")
-        buf.write("\25\3\2\2\2vw\5\30\r\2wx\7\21\2\2x\u0080\7\26\2\2yz\7")
-        buf.write("\24\2\2z{\5\30\r\2{|\7\21\2\2|}\7\26\2\2}\177\3\2\2\2")
-        buf.write("~y\3\2\2\2\177\u0082\3\2\2\2\u0080~\3\2\2\2\u0080\u0081")
-        buf.write("\3\2\2\2\u0081\27\3\2\2\2\u0082\u0080\3\2\2\2\u0083\u0088")
-        buf.write("\t\2\2\2\u0084\u0085\7\25\2\2\u0085\u0087\7\27\2\2\u0086")
-        buf.write("\u0084\3\2\2\2\u0087\u008a\3\2\2\2\u0088\u0086\3\2\2\2")
-        buf.write("\u0088\u0089\3\2\2\2\u0089\31\3\2\2\2\u008a\u0088\3\2")
-        buf.write("\2\2\u008b\u008c\t\3\2\2\u008c\33\3\2\2\2\u008d\u008e")
-        buf.write("\7\t\2\2\u008e\u008f\7\r\2\2\u008f\u0096\7\27\2\2\u0090")
-        buf.write("\u0091\7\16\2\2\u0091\u0092\5\36\20\2\u0092\u0093\7\22")
-        buf.write("\2\2\u0093\u0094\5 \21\2\u0094\u0095\7\23\2\2\u0095\u0097")
-        buf.write("\3\2\2\2\u0096\u0090\3\2\2\2\u0096\u0097\3\2\2\2\u0097")
-        buf.write("\35\3\2\2\2\u0098\u0099\t\4\2\2\u0099\37\3\2\2\2\u009a")
-        buf.write("\u009b\5\32\16\2\u009b\u009c\7\24\2\2\u009c\u009d\5\32")
-        buf.write("\16\2\u009d!\3\2\2\2\16%*8=JOT\\`\u0080\u0088\u0096")
+        buf.write("\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22\4\23\t\23")
+        buf.write("\3\2\5\2(\n\2\3\2\7\2+\n\2\f\2\16\2.\13\2\3\3\3\3\5\3")
+        buf.write("\62\n\3\3\4\3\4\7\4\66\n\4\f\4\16\49\13\4\3\4\3\4\3\5")
+        buf.write("\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\5\5I\n\5")
+        buf.write("\3\5\7\5L\n\5\f\5\16\5O\13\5\3\5\3\5\3\6\3\6\3\6\3\6\3")
+        buf.write("\6\3\6\3\6\3\6\5\6[\n\6\3\6\6\6^\n\6\r\6\16\6_\3\6\7\6")
+        buf.write("c\n\6\f\6\16\6f\13\6\3\6\3\6\3\7\3\7\5\7l\n\7\3\b\3\b")
+        buf.write("\3\b\5\bq\n\b\3\t\3\t\5\tu\n\t\3\n\3\n\3\n\3\n\3\13\3")
+        buf.write("\13\3\13\3\13\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\r\3\r")
+        buf.write("\3\r\3\r\3\16\3\16\3\16\3\16\3\16\3\16\3\16\3\16\7\16")
+        buf.write("\u0093\n\16\f\16\16\16\u0096\13\16\3\17\3\17\3\17\7\17")
+        buf.write("\u009b\n\17\f\17\16\17\u009e\13\17\3\20\3\20\3\21\3\21")
+        buf.write("\3\21\3\21\3\21\3\21\3\21\3\21\3\21\5\21\u00ab\n\21\3")
+        buf.write("\22\3\22\3\23\3\23\3\23\3\23\3\23\2\2\24\2\4\6\b\n\f\16")
+        buf.write("\20\22\24\26\30\32\34\36 \"$\2\5\4\2\21\21\30\30\3\2\27")
+        buf.write("\31\3\2\13\f\u00b0\2\'\3\2\2\2\4\61\3\2\2\2\6\63\3\2\2")
+        buf.write("\2\b<\3\2\2\2\nR\3\2\2\2\fk\3\2\2\2\16p\3\2\2\2\20t\3")
+        buf.write("\2\2\2\22v\3\2\2\2\24z\3\2\2\2\26~\3\2\2\2\30\u0086\3")
+        buf.write("\2\2\2\32\u008a\3\2\2\2\34\u0097\3\2\2\2\36\u009f\3\2")
+        buf.write("\2\2 \u00a1\3\2\2\2\"\u00ac\3\2\2\2$\u00ae\3\2\2\2&(\5")
+        buf.write("\6\4\2\'&\3\2\2\2\'(\3\2\2\2(,\3\2\2\2)+\5\4\3\2*)\3\2")
+        buf.write("\2\2+.\3\2\2\2,*\3\2\2\2,-\3\2\2\2-\3\3\2\2\2.,\3\2\2")
+        buf.write("\2/\62\5\b\5\2\60\62\5\n\6\2\61/\3\2\2\2\61\60\3\2\2\2")
+        buf.write("\62\5\3\2\2\2\63\67\7\6\2\2\64\66\5\f\7\2\65\64\3\2\2")
+        buf.write("\2\669\3\2\2\2\67\65\3\2\2\2\678\3\2\2\28:\3\2\2\29\67")
+        buf.write("\3\2\2\2:;\7\20\2\2;\7\3\2\2\2<=\7\b\2\2=>\7\30\2\2>?")
+        buf.write("\7\17\2\2?@\7\23\2\2@A\5\30\r\2AB\7\24\2\2BC\7\r\2\2C")
+        buf.write("H\7\30\2\2DE\7\23\2\2EF\5\32\16\2FG\7\24\2\2GI\3\2\2\2")
+        buf.write("HD\3\2\2\2HI\3\2\2\2IM\3\2\2\2JL\5\16\b\2KJ\3\2\2\2LO")
+        buf.write("\3\2\2\2MK\3\2\2\2MN\3\2\2\2NP\3\2\2\2OM\3\2\2\2PQ\7\20")
+        buf.write("\2\2Q\t\3\2\2\2RS\7\t\2\2ST\7\30\2\2TU\7\r\2\2UZ\7\30")
+        buf.write("\2\2VW\7\23\2\2WX\5\32\16\2XY\7\24\2\2Y[\3\2\2\2ZV\3\2")
+        buf.write("\2\2Z[\3\2\2\2[]\3\2\2\2\\^\5 \21\2]\\\3\2\2\2^_\3\2\2")
+        buf.write("\2_]\3\2\2\2_`\3\2\2\2`d\3\2\2\2ac\5\20\t\2ba\3\2\2\2")
+        buf.write("cf\3\2\2\2db\3\2\2\2de\3\2\2\2eg\3\2\2\2fd\3\2\2\2gh\7")
+        buf.write("\20\2\2h\13\3\2\2\2il\5\22\n\2jl\5\24\13\2ki\3\2\2\2k")
+        buf.write("j\3\2\2\2l\r\3\2\2\2mq\5\22\n\2nq\5\24\13\2oq\5\26\f\2")
+        buf.write("pm\3\2\2\2pn\3\2\2\2po\3\2\2\2q\17\3\2\2\2ru\5\22\n\2")
+        buf.write("su\5\24\13\2tr\3\2\2\2ts\3\2\2\2u\21\3\2\2\2vw\7\3\2\2")
+        buf.write("wx\5\34\17\2xy\7\30\2\2y\23\3\2\2\2z{\7\4\2\2{|\5\34\17")
+        buf.write("\2|}\5\36\20\2}\25\3\2\2\2~\177\7\5\2\2\177\u0080\5\34")
+        buf.write("\17\2\u0080\u0081\7\17\2\2\u0081\u0082\5\36\20\2\u0082")
+        buf.write("\u0083\7\7\2\2\u0083\u0084\7\16\2\2\u0084\u0085\7\30\2")
+        buf.write("\2\u0085\27\3\2\2\2\u0086\u0087\7\27\2\2\u0087\u0088\7")
+        buf.write("\25\2\2\u0088\u0089\7\27\2\2\u0089\31\3\2\2\2\u008a\u008b")
+        buf.write("\5\34\17\2\u008b\u008c\7\22\2\2\u008c\u0094\7\27\2\2\u008d")
+        buf.write("\u008e\7\25\2\2\u008e\u008f\5\34\17\2\u008f\u0090\7\22")
+        buf.write("\2\2\u0090\u0091\7\27\2\2\u0091\u0093\3\2\2\2\u0092\u008d")
+        buf.write("\3\2\2\2\u0093\u0096\3\2\2\2\u0094\u0092\3\2\2\2\u0094")
+        buf.write("\u0095\3\2\2\2\u0095\33\3\2\2\2\u0096\u0094\3\2\2\2\u0097")
+        buf.write("\u009c\t\2\2\2\u0098\u0099\7\26\2\2\u0099\u009b\7\30\2")
+        buf.write("\2\u009a\u0098\3\2\2\2\u009b\u009e\3\2\2\2\u009c\u009a")
+        buf.write("\3\2\2\2\u009c\u009d\3\2\2\2\u009d\35\3\2\2\2\u009e\u009c")
+        buf.write("\3\2\2\2\u009f\u00a0\t\3\2\2\u00a0\37\3\2\2\2\u00a1\u00a2")
+        buf.write("\7\n\2\2\u00a2\u00a3\7\16\2\2\u00a3\u00aa\7\30\2\2\u00a4")
+        buf.write("\u00a5\7\17\2\2\u00a5\u00a6\5\"\22\2\u00a6\u00a7\7\23")
+        buf.write("\2\2\u00a7\u00a8\5$\23\2\u00a8\u00a9\7\24\2\2\u00a9\u00ab")
+        buf.write("\3\2\2\2\u00aa\u00a4\3\2\2\2\u00aa\u00ab\3\2\2\2\u00ab")
+        buf.write("!\3\2\2\2\u00ac\u00ad\t\4\2\2\u00ad#\3\2\2\2\u00ae\u00af")
+        buf.write("\5\36\20\2\u00af\u00b0\7\25\2\2\u00b0\u00b1\5\36\20\2")
+        buf.write("\u00b1%\3\2\2\2\21\',\61\67HMZ_dkpt\u0094\u009c\u00aa")
         return buf.getvalue()
 
 
@@ -72,63 +82,66 @@ class asparagramParser ( Parser ):
 
     sharedContextCache = PredictionContextCache()
 
-    literalNames = [ "<INVALID>", "'call'", "'set'", "'place'", "'relative'", 
-                     "'object'", "'dynamic'", "'connected'", "'rectangular'", 
-                     "'polar'", "'is'", "'to'", "'at'", "'end'", "'$'", 
-                     "'='", "'('", "')'", "','", "'.'" ]
+    literalNames = [ "<INVALID>", "'call'", "'set'", "'place'", "'globals'", 
+                     "'relative'", "'object'", "'dynamic'", "'connected'", 
+                     "'rectangular'", "'polar'", "'is'", "'to'", "'at'", 
+                     "'end'", "'$'", "'='", "'('", "')'", "','", "'.'" ]
 
-    symbolicNames = [ "<INVALID>", "TKCALL", "TKSET", "TKPLC", "TKREL", 
-                      "TKOBJ", "TKDYN", "TKCONN", "TKRECT", "TKPOL", "TKIS", 
-                      "TKTO", "TKAT", "TKEND", "TKLEAD", "TKEQ", "TKLPAR", 
-                      "TKRPAR", "TKCOM", "TKDOT", "TKNUM", "TKID", "TKEXPR", 
-                      "TKWS" ]
+    symbolicNames = [ "<INVALID>", "TKCALL", "TKSET", "TKPLC", "TKGLOB", 
+                      "TKREL", "TKOBJ", "TKDYN", "TKCONN", "TKRECT", "TKPOL", 
+                      "TKIS", "TKTO", "TKAT", "TKEND", "TKLEAD", "TKEQ", 
+                      "TKLPAR", "TKRPAR", "TKCOM", "TKDOT", "TKNUM", "TKID", 
+                      "TKEXPR", "TKWS" ]
 
     RULE_rlRoot = 0
     RULE_rlStmt = 1
-    RULE_rlObjStmt = 2
-    RULE_rlDynStmt = 3
-    RULE_rlObjStmts = 4
-    RULE_rlDynStmts = 5
-    RULE_rlCallStmt = 6
-    RULE_rlSetStmt = 7
-    RULE_rlPlaceStmt = 8
-    RULE_rlPos = 9
-    RULE_rlNPropList = 10
-    RULE_rlProperty = 11
-    RULE_rlValue = 12
-    RULE_rlConnection = 13
-    RULE_rlRef = 14
-    RULE_rlOff = 15
+    RULE_rlGlobStmt = 2
+    RULE_rlObjStmt = 3
+    RULE_rlDynStmt = 4
+    RULE_rlGlobStmts = 5
+    RULE_rlObjStmts = 6
+    RULE_rlDynStmts = 7
+    RULE_rlCallStmt = 8
+    RULE_rlSetStmt = 9
+    RULE_rlPlaceStmt = 10
+    RULE_rlPos = 11
+    RULE_rlNPropList = 12
+    RULE_rlProperty = 13
+    RULE_rlValue = 14
+    RULE_rlConnection = 15
+    RULE_rlRef = 16
+    RULE_rlOff = 17
 
-    ruleNames =  [ "rlRoot", "rlStmt", "rlObjStmt", "rlDynStmt", "rlObjStmts", 
-                   "rlDynStmts", "rlCallStmt", "rlSetStmt", "rlPlaceStmt", 
-                   "rlPos", "rlNPropList", "rlProperty", "rlValue", "rlConnection", 
-                   "rlRef", "rlOff" ]
+    ruleNames =  [ "rlRoot", "rlStmt", "rlGlobStmt", "rlObjStmt", "rlDynStmt", 
+                   "rlGlobStmts", "rlObjStmts", "rlDynStmts", "rlCallStmt", 
+                   "rlSetStmt", "rlPlaceStmt", "rlPos", "rlNPropList", "rlProperty", 
+                   "rlValue", "rlConnection", "rlRef", "rlOff" ]
 
     EOF = Token.EOF
     TKCALL=1
     TKSET=2
     TKPLC=3
-    TKREL=4
-    TKOBJ=5
-    TKDYN=6
-    TKCONN=7
-    TKRECT=8
-    TKPOL=9
-    TKIS=10
-    TKTO=11
-    TKAT=12
-    TKEND=13
-    TKLEAD=14
-    TKEQ=15
-    TKLPAR=16
-    TKRPAR=17
-    TKCOM=18
-    TKDOT=19
-    TKNUM=20
-    TKID=21
-    TKEXPR=22
-    TKWS=23
+    TKGLOB=4
+    TKREL=5
+    TKOBJ=6
+    TKDYN=7
+    TKCONN=8
+    TKRECT=9
+    TKPOL=10
+    TKIS=11
+    TKTO=12
+    TKAT=13
+    TKEND=14
+    TKLEAD=15
+    TKEQ=16
+    TKLPAR=17
+    TKRPAR=18
+    TKCOM=19
+    TKDOT=20
+    TKNUM=21
+    TKID=22
+    TKEXPR=23
+    TKWS=24
 
     def __init__(self, input:TokenStream):
         super().__init__(input)
@@ -143,6 +156,10 @@ class asparagramParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
+
+        def rlGlobStmt(self):
+            return self.getTypedRuleContext(asparagramParser.RlGlobStmtContext,0)
+
 
         def rlStmt(self, i:int=None):
             if i is None:
@@ -178,13 +195,20 @@ class asparagramParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 35
+            self.state = 37
+            _la = self._input.LA(1)
+            if _la==asparagramParser.TKGLOB:
+                self.state = 36
+                self.rlGlobStmt()
+
+
+            self.state = 42
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==asparagramParser.TKOBJ or _la==asparagramParser.TKDYN:
-                self.state = 32
+                self.state = 39
                 self.rlStmt()
-                self.state = 37
+                self.state = 44
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
@@ -235,21 +259,89 @@ class asparagramParser ( Parser ):
         localctx = asparagramParser.RlStmtContext(self, self._ctx, self.state)
         self.enterRule(localctx, 2, self.RULE_rlStmt)
         try:
-            self.state = 40
+            self.state = 47
             token = self._input.LA(1)
             if token in [asparagramParser.TKOBJ]:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 38
+                self.state = 45
                 self.rlObjStmt()
 
             elif token in [asparagramParser.TKDYN]:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 39
+                self.state = 46
                 self.rlDynStmt()
 
             else:
                 raise NoViableAltException(self)
 
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+    class RlGlobStmtContext(ParserRuleContext):
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def TKGLOB(self):
+            return self.getToken(asparagramParser.TKGLOB, 0)
+
+        def TKEND(self):
+            return self.getToken(asparagramParser.TKEND, 0)
+
+        def rlGlobStmts(self, i:int=None):
+            if i is None:
+                return self.getTypedRuleContexts(asparagramParser.RlGlobStmtsContext)
+            else:
+                return self.getTypedRuleContext(asparagramParser.RlGlobStmtsContext,i)
+
+
+        def getRuleIndex(self):
+            return asparagramParser.RULE_rlGlobStmt
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterRlGlobStmt" ):
+                listener.enterRlGlobStmt(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitRlGlobStmt" ):
+                listener.exitRlGlobStmt(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitRlGlobStmt" ):
+                return visitor.visitRlGlobStmt(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+
+
+    def rlGlobStmt(self):
+
+        localctx = asparagramParser.RlGlobStmtContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 4, self.RULE_rlGlobStmt)
+        self._la = 0 # Token type
+        try:
+            self.enterOuterAlt(localctx, 1)
+            self.state = 49
+            self.match(asparagramParser.TKGLOB)
+            self.state = 53
+            self._errHandler.sync(self)
+            _la = self._input.LA(1)
+            while _la==asparagramParser.TKCALL or _la==asparagramParser.TKSET:
+                self.state = 50
+                self.rlGlobStmts()
+                self.state = 55
+                self._errHandler.sync(self)
+                _la = self._input.LA(1)
+
+            self.state = 56
+            self.match(asparagramParser.TKEND)
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -332,48 +424,48 @@ class asparagramParser ( Parser ):
     def rlObjStmt(self):
 
         localctx = asparagramParser.RlObjStmtContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 4, self.RULE_rlObjStmt)
+        self.enterRule(localctx, 6, self.RULE_rlObjStmt)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 42
+            self.state = 58
             self.match(asparagramParser.TKOBJ)
-            self.state = 43
+            self.state = 59
             self.match(asparagramParser.TKID)
-            self.state = 44
+            self.state = 60
             self.match(asparagramParser.TKAT)
-            self.state = 45
+            self.state = 61
             self.match(asparagramParser.TKLPAR)
-            self.state = 46
+            self.state = 62
             self.rlPos()
-            self.state = 47
+            self.state = 63
             self.match(asparagramParser.TKRPAR)
-            self.state = 48
+            self.state = 64
             self.match(asparagramParser.TKIS)
-            self.state = 49
+            self.state = 65
             self.match(asparagramParser.TKID)
-            self.state = 54
+            self.state = 70
             _la = self._input.LA(1)
             if _la==asparagramParser.TKLPAR:
-                self.state = 50
+                self.state = 66
                 self.match(asparagramParser.TKLPAR)
-                self.state = 51
+                self.state = 67
                 self.rlNPropList()
-                self.state = 52
+                self.state = 68
                 self.match(asparagramParser.TKRPAR)
 
 
-            self.state = 59
+            self.state = 75
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << asparagramParser.TKCALL) | (1 << asparagramParser.TKSET) | (1 << asparagramParser.TKPLC))) != 0):
-                self.state = 56
+                self.state = 72
                 self.rlObjStmts()
-                self.state = 61
+                self.state = 77
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 62
+            self.state = 78
             self.match(asparagramParser.TKEND)
         except RecognitionException as re:
             localctx.exception = re
@@ -451,53 +543,115 @@ class asparagramParser ( Parser ):
     def rlDynStmt(self):
 
         localctx = asparagramParser.RlDynStmtContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 6, self.RULE_rlDynStmt)
+        self.enterRule(localctx, 8, self.RULE_rlDynStmt)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 64
+            self.state = 80
             self.match(asparagramParser.TKDYN)
-            self.state = 65
+            self.state = 81
             self.match(asparagramParser.TKID)
-            self.state = 66
+            self.state = 82
             self.match(asparagramParser.TKIS)
-            self.state = 67
+            self.state = 83
             self.match(asparagramParser.TKID)
-            self.state = 72
+            self.state = 88
             _la = self._input.LA(1)
             if _la==asparagramParser.TKLPAR:
-                self.state = 68
+                self.state = 84
                 self.match(asparagramParser.TKLPAR)
-                self.state = 69
+                self.state = 85
                 self.rlNPropList()
-                self.state = 70
+                self.state = 86
                 self.match(asparagramParser.TKRPAR)
 
 
-            self.state = 75 
+            self.state = 91 
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while True:
-                self.state = 74
+                self.state = 90
                 self.rlConnection()
-                self.state = 77 
+                self.state = 93 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 if not (_la==asparagramParser.TKCONN):
                     break
 
-            self.state = 82
+            self.state = 98
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==asparagramParser.TKCALL or _la==asparagramParser.TKSET:
-                self.state = 79
+                self.state = 95
                 self.rlDynStmts()
-                self.state = 84
+                self.state = 100
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 85
+            self.state = 101
             self.match(asparagramParser.TKEND)
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+    class RlGlobStmtsContext(ParserRuleContext):
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def rlCallStmt(self):
+            return self.getTypedRuleContext(asparagramParser.RlCallStmtContext,0)
+
+
+        def rlSetStmt(self):
+            return self.getTypedRuleContext(asparagramParser.RlSetStmtContext,0)
+
+
+        def getRuleIndex(self):
+            return asparagramParser.RULE_rlGlobStmts
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterRlGlobStmts" ):
+                listener.enterRlGlobStmts(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitRlGlobStmts" ):
+                listener.exitRlGlobStmts(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitRlGlobStmts" ):
+                return visitor.visitRlGlobStmts(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+
+
+    def rlGlobStmts(self):
+
+        localctx = asparagramParser.RlGlobStmtsContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 10, self.RULE_rlGlobStmts)
+        try:
+            self.state = 105
+            token = self._input.LA(1)
+            if token in [asparagramParser.TKCALL]:
+                self.enterOuterAlt(localctx, 1)
+                self.state = 103
+                self.rlCallStmt()
+
+            elif token in [asparagramParser.TKSET]:
+                self.enterOuterAlt(localctx, 2)
+                self.state = 104
+                self.rlSetStmt()
+
+            else:
+                raise NoViableAltException(self)
+
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -547,23 +701,23 @@ class asparagramParser ( Parser ):
     def rlObjStmts(self):
 
         localctx = asparagramParser.RlObjStmtsContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 8, self.RULE_rlObjStmts)
+        self.enterRule(localctx, 12, self.RULE_rlObjStmts)
         try:
-            self.state = 90
+            self.state = 110
             token = self._input.LA(1)
             if token in [asparagramParser.TKCALL]:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 87
+                self.state = 107
                 self.rlCallStmt()
 
             elif token in [asparagramParser.TKSET]:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 88
+                self.state = 108
                 self.rlSetStmt()
 
             elif token in [asparagramParser.TKPLC]:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 89
+                self.state = 109
                 self.rlPlaceStmt()
 
             else:
@@ -614,18 +768,18 @@ class asparagramParser ( Parser ):
     def rlDynStmts(self):
 
         localctx = asparagramParser.RlDynStmtsContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 10, self.RULE_rlDynStmts)
+        self.enterRule(localctx, 14, self.RULE_rlDynStmts)
         try:
-            self.state = 94
+            self.state = 114
             token = self._input.LA(1)
             if token in [asparagramParser.TKCALL]:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 92
+                self.state = 112
                 self.rlCallStmt()
 
             elif token in [asparagramParser.TKSET]:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 93
+                self.state = 113
                 self.rlSetStmt()
 
             else:
@@ -678,14 +832,14 @@ class asparagramParser ( Parser ):
     def rlCallStmt(self):
 
         localctx = asparagramParser.RlCallStmtContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 12, self.RULE_rlCallStmt)
+        self.enterRule(localctx, 16, self.RULE_rlCallStmt)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 96
+            self.state = 116
             self.match(asparagramParser.TKCALL)
-            self.state = 97
+            self.state = 117
             self.rlProperty()
-            self.state = 98
+            self.state = 118
             self.match(asparagramParser.TKID)
         except RecognitionException as re:
             localctx.exception = re
@@ -735,14 +889,14 @@ class asparagramParser ( Parser ):
     def rlSetStmt(self):
 
         localctx = asparagramParser.RlSetStmtContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 14, self.RULE_rlSetStmt)
+        self.enterRule(localctx, 18, self.RULE_rlSetStmt)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 100
+            self.state = 120
             self.match(asparagramParser.TKSET)
-            self.state = 101
+            self.state = 121
             self.rlProperty()
-            self.state = 102
+            self.state = 122
             self.rlValue()
         except RecognitionException as re:
             localctx.exception = re
@@ -804,22 +958,22 @@ class asparagramParser ( Parser ):
     def rlPlaceStmt(self):
 
         localctx = asparagramParser.RlPlaceStmtContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 16, self.RULE_rlPlaceStmt)
+        self.enterRule(localctx, 20, self.RULE_rlPlaceStmt)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 104
+            self.state = 124
             self.match(asparagramParser.TKPLC)
-            self.state = 105
+            self.state = 125
             self.rlProperty()
-            self.state = 106
+            self.state = 126
             self.match(asparagramParser.TKAT)
-            self.state = 107
+            self.state = 127
             self.rlValue()
-            self.state = 108
+            self.state = 128
             self.match(asparagramParser.TKREL)
-            self.state = 109
+            self.state = 129
             self.match(asparagramParser.TKTO)
-            self.state = 110
+            self.state = 130
             self.match(asparagramParser.TKID)
         except RecognitionException as re:
             localctx.exception = re
@@ -867,14 +1021,14 @@ class asparagramParser ( Parser ):
     def rlPos(self):
 
         localctx = asparagramParser.RlPosContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 18, self.RULE_rlPos)
+        self.enterRule(localctx, 22, self.RULE_rlPos)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 112
+            self.state = 132
             self.match(asparagramParser.TKNUM)
-            self.state = 113
+            self.state = 133
             self.match(asparagramParser.TKCOM)
-            self.state = 114
+            self.state = 134
             self.match(asparagramParser.TKNUM)
         except RecognitionException as re:
             localctx.exception = re
@@ -938,29 +1092,29 @@ class asparagramParser ( Parser ):
     def rlNPropList(self):
 
         localctx = asparagramParser.RlNPropListContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 20, self.RULE_rlNPropList)
+        self.enterRule(localctx, 24, self.RULE_rlNPropList)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 116
+            self.state = 136
             self.rlProperty()
-            self.state = 117
+            self.state = 137
             self.match(asparagramParser.TKEQ)
-            self.state = 118
+            self.state = 138
             self.match(asparagramParser.TKNUM)
-            self.state = 126
+            self.state = 146
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==asparagramParser.TKCOM:
-                self.state = 119
+                self.state = 139
                 self.match(asparagramParser.TKCOM)
-                self.state = 120
+                self.state = 140
                 self.rlProperty()
-                self.state = 121
+                self.state = 141
                 self.match(asparagramParser.TKEQ)
-                self.state = 122
+                self.state = 142
                 self.match(asparagramParser.TKNUM)
-                self.state = 128
+                self.state = 148
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
@@ -1016,25 +1170,25 @@ class asparagramParser ( Parser ):
     def rlProperty(self):
 
         localctx = asparagramParser.RlPropertyContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 22, self.RULE_rlProperty)
+        self.enterRule(localctx, 26, self.RULE_rlProperty)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 129
+            self.state = 149
             _la = self._input.LA(1)
             if not(_la==asparagramParser.TKLEAD or _la==asparagramParser.TKID):
                 self._errHandler.recoverInline(self)
             else:
                 self.consume()
-            self.state = 134
+            self.state = 154
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==asparagramParser.TKDOT:
-                self.state = 130
+                self.state = 150
                 self.match(asparagramParser.TKDOT)
-                self.state = 131
+                self.state = 151
                 self.match(asparagramParser.TKID)
-                self.state = 136
+                self.state = 156
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
@@ -1084,11 +1238,11 @@ class asparagramParser ( Parser ):
     def rlValue(self):
 
         localctx = asparagramParser.RlValueContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 24, self.RULE_rlValue)
+        self.enterRule(localctx, 28, self.RULE_rlValue)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 137
+            self.state = 157
             _la = self._input.LA(1)
             if not((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << asparagramParser.TKNUM) | (1 << asparagramParser.TKID) | (1 << asparagramParser.TKEXPR))) != 0)):
                 self._errHandler.recoverInline(self)
@@ -1157,28 +1311,28 @@ class asparagramParser ( Parser ):
     def rlConnection(self):
 
         localctx = asparagramParser.RlConnectionContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 26, self.RULE_rlConnection)
+        self.enterRule(localctx, 30, self.RULE_rlConnection)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 139
+            self.state = 159
             self.match(asparagramParser.TKCONN)
-            self.state = 140
+            self.state = 160
             self.match(asparagramParser.TKTO)
-            self.state = 141
+            self.state = 161
             self.match(asparagramParser.TKID)
-            self.state = 148
+            self.state = 168
             _la = self._input.LA(1)
             if _la==asparagramParser.TKAT:
-                self.state = 142
+                self.state = 162
                 self.match(asparagramParser.TKAT)
-                self.state = 143
+                self.state = 163
                 self.rlRef()
-                self.state = 144
+                self.state = 164
                 self.match(asparagramParser.TKLPAR)
-                self.state = 145
+                self.state = 165
                 self.rlOff()
-                self.state = 146
+                self.state = 166
                 self.match(asparagramParser.TKRPAR)
 
 
@@ -1225,11 +1379,11 @@ class asparagramParser ( Parser ):
     def rlRef(self):
 
         localctx = asparagramParser.RlRefContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 28, self.RULE_rlRef)
+        self.enterRule(localctx, 32, self.RULE_rlRef)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 150
+            self.state = 170
             _la = self._input.LA(1)
             if not(_la==asparagramParser.TKRECT or _la==asparagramParser.TKPOL):
                 self._errHandler.recoverInline(self)
@@ -1282,14 +1436,14 @@ class asparagramParser ( Parser ):
     def rlOff(self):
 
         localctx = asparagramParser.RlOffContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 30, self.RULE_rlOff)
+        self.enterRule(localctx, 34, self.RULE_rlOff)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 152
+            self.state = 172
             self.rlValue()
-            self.state = 153
+            self.state = 173
             self.match(asparagramParser.TKCOM)
-            self.state = 154
+            self.state = 174
             self.rlValue()
         except RecognitionException as re:
             localctx.exception = re

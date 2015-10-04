@@ -18,8 +18,8 @@ grammar asparagram;
 
 // Root
 
-rlRoot : rlStmt*
-     ;
+rlRoot : rlGlobStmt? rlStmt*
+       ;
 
 // First level statements
 
@@ -27,13 +27,20 @@ rlStmt : rlObjStmt
        | rlDynStmt
        ;
 
+rlGlobStmt : TKGLOB rlGlobStmts* TKEND
+           ;
+
 rlObjStmt : TKOBJ TKID TKAT TKLPAR rlPos TKRPAR TKIS TKID (TKLPAR rlNPropList TKRPAR)? rlObjStmts* TKEND
           ;
 
 rlDynStmt : TKDYN TKID TKIS TKID (TKLPAR rlNPropList TKRPAR)? rlConnection+ rlDynStmts* TKEND
           ;
 
-// Second level object and dynamic statements
+// Second level global, object and dynamic statements
+
+rlGlobStmts : rlCallStmt
+            | rlSetStmt
+            ;
 
 rlObjStmts : rlCallStmt
            | rlSetStmt
@@ -53,7 +60,7 @@ rlSetStmt : TKSET rlProperty rlValue
 rlPlaceStmt : TKPLC rlProperty TKAT rlValue TKREL TKTO TKID
             ;
 
-// Position vector: x, y, angle
+// Position vector: x, y
 
 rlPos : TKNUM TKCOM TKNUM
       ;
@@ -101,6 +108,7 @@ rlOff : rlValue TKCOM rlValue
 TKCALL : 'call' ;
 TKSET  : 'set' ;
 TKPLC  : 'place' ;
+TKGLOB : 'globals' ;
 TKREL  : 'relative' ;
 TKOBJ  : 'object' ;
 TKDYN  : 'dynamic' ;

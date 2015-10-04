@@ -19,6 +19,11 @@ class asparagramVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by asparagramParser#rlGlobStmt.
+    def visitRlGlobStmt(self, ctx:asparagramParser.RlGlobStmtContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by asparagramParser#rlObjStmt.
     def visitRlObjStmt(self, ctx:asparagramParser.RlObjStmtContext):
         return self.visitChildren(ctx)
@@ -26,6 +31,11 @@ class asparagramVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by asparagramParser#rlDynStmt.
     def visitRlDynStmt(self, ctx:asparagramParser.RlDynStmtContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by asparagramParser#rlGlobStmts.
+    def visitRlGlobStmts(self, ctx:asparagramParser.RlGlobStmtsContext):
         return self.visitChildren(ctx)
 
 
