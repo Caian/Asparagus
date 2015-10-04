@@ -416,8 +416,9 @@ class T3Engine():
     def solveEquations(self):
         # System of equations
         self.printer.print_diagnostic(3, 'Finishing system of equations...')
-        for expr in self.scene['fragments']:
+        for ei, expr in enumerate(self.scene['fragments']):
             obj = expr['object']
+            self.printer.print_diagnostic(3, '(%d/%d) %s...' % (ei+1, len(self.scene['fragments']), obj['$.name']))
             rftmode, rfrmode, rfangle, rfdir = self.scene['refs'][obj['$.name']]
             rhsx = 0
             rhsy = 0
@@ -438,9 +439,9 @@ class T3Engine():
                             rhsy += y
                     if rfrmode != 0:
                         # Compute the torque components
-                        atd, ata = dyn.getAttachment(obj, 'p')
+                        atd, ata, atm = dyn.getAttachment(obj, 'p')
                         # Compute the torque angle
-                        tangle = ata + sympy.pi / 2
+                        tangle = ata + sympy.pi / 2 + obj['rt.angle']
                         # Compute the projection of the force onto the torque direction
                         torque = sympy.simplify(force*sympy.cos(angle - tangle))
                         rhst += torque
@@ -475,6 +476,13 @@ class T3Engine():
                             Globals.time(self.symbols), Globals.time(self.symbols)), rhst))
                     else:
                         raise Exception('unknown reference frame mode')
+        # Finish with the link equations
+        for di, dyn in enumerate(self.scene['dynamics']):
+            self.printer.print_diagnostic(3, '(%d/%d) %s...' % (di+1, len(self.scene['dynamics']), dyn.name))
+            les = dyn.getLEqns()
+            for le in les:
+                le = sympy.simplify(le)
+                self.scene['equations'].append(le)
         seq = []
         for eq in self.scene['equations']:
             seq.append(str(eq))

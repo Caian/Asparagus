@@ -33,24 +33,18 @@ class Dynamic:
         if mode == 'p':
             dname = Globals.getAttachProp(obj['$.name'], 'd')
             tname = Globals.getAttachProp(obj['$.name'], 'theta')
+            # The angle will always be constant and relative to the 
+            # angular position of the body
+            t = self.symbols.getSymbol(self.name, tname)
             d = self.symbols.getSymbol(self.name, dname, nonnegative=True)
-            # Without moment of inertia, the angle of the attachment will be constant 
-            if obj['rt.mass'] == 0:
-                t = self.symbols.getSymbol(self.name, tname)
-            else:
-                t = self.symbols.getFunction(self.name, tname, [Globals.time(self.symbols)])
             # (distance from center of mass, angle)
             return (d, t, mode)
         elif mode == 'r':
             xname = Globals.getAttachProp(obj['$.name'], 'x')
             yname = Globals.getAttachProp(obj['$.name'], 'y')
             # Without moment of inertia, the attachment position will be constant 
-            if obj['rt.mass'] == 0:
-                x = self.symbols.getSymbol(self.name, xname)
-                y = self.symbols.getSymbol(self.name, yname)
-            else:
-                x = self.symbols.getFunction(self.name, xname, [Globals.time(self.symbols)])
-                y = self.symbols.getFunction(self.name, yname, [Globals.time(self.symbols)])
+            x = self.symbols.getSymbol(self.name, xname)
+            y = self.symbols.getSymbol(self.name, yname)
             # (x distance from center of mass, y distance from center of mass)
             return (x, y, mode)
         else:
@@ -59,21 +53,21 @@ class Dynamic:
     def convertAttachment(self, att, mode = 't'):
         m = att[2]
         if mode == m:
-            return (att[0], att[1])
+            return (att[0], att[1], att[2])
         elif mode == 'r':
             if m == 'p':
                 d = att[0]
                 t = att[1]
-                return (d*sympy.sin(t), d*sympy.cos(t))
+                return (d*sympy.sin(t), d*sympy.cos(t), mode)
             else:
                 raise Exception('invalid attachment mode %s' % str(m))
         elif mode == 'p':
             if m == 'r':
                 x = att[0]
-                y = att[0]
+                y = att[1]
                 # TODO remember to flip y during c->r
                 # check theta direction
-                return (sympy.sqrt(x**2+y**2), sympy.atan2(x, y))
+                return (sympy.sqrt(x**2+y**2), sympy.atan2(x, y), mode)
             else:
                 raise Exception('invalid attachment mode %s' % str(m))
         else:
@@ -141,7 +135,7 @@ class WeightDynamic(Dynamic):
         if obj != self.obj:
             raise Exception('invalid object')
         # (distance from center of mass, angle)
-        return (0, 0)
+        return (0, 0, mode)
         
 # Base class for dynamics that connect two objects
 class PairDynamic(Dynamic):
@@ -207,13 +201,21 @@ class RodDynamic(PairDynamic):
         y1 = self.obja['tr.y']
         x2 = self.objb['tr.x']
         y2 = self.objb['tr.y']
-        # attachment A
-        i1, j1 = self.convertAttachment(self.atta, 'r')
-        # attachment B
-        i2, j2 = self.convertAttachment(self.attb, 'r')
+        a1 = self.obja['rt.angle']
+        a2 = self.obja['rt.angle']
+
+        # Convert the attachments to polar, add the body angle
+        # and then reconvert to rectangular
+        att1 = self.convertAttachment(self.atta, 'p')
+        att2 = self.convertAttachment(self.attb, 'p')
+        att1 = (att1[0], a1 + att1[1], att1[2])
+        att2 = (att2[0], a2 + att2[1], att2[2])
+        i1, j1, m1 = self.convertAttachment(att1, 'r')
+        i2, j2, m2 = self.convertAttachment(att2, 'r')
+
         return [
-            sympy.Eq(x2, x1 + i1 + (l+d)*sympy.sin(td)) - i2,
-            sympy.Eq(y2, y1 + j1 + (l+d)*sympy.cos(td)) - j2,
+            sympy.Eq(x2, x1 + i1 + (l+d)*sympy.sin(td) - i2),
+            sympy.Eq(y2, y1 + j1 + (l+d)*sympy.cos(td) - j2),
         ]
     
     def getIEqns(self):
