@@ -40,6 +40,7 @@ class SymbolPool():
             self.positify(expr, symbag)
             expr = expr.subs(symbag)
             self.replacements[key] = expr
+            return expr
 
     def getSymbol(self, objname, property, nonnegative=False):
         key = Globals.getPropString(objname, property)
