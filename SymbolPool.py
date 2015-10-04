@@ -18,6 +18,7 @@
 #
 
 import sympy
+import Globals
 
 class SymbolPool():
     def __init__(self):
@@ -27,7 +28,7 @@ class SymbolPool():
         return expr
 
     def addReplacement(self, objname, property, value):
-            key = '%s.%s' % (objname, property)
+            key = Globals.getPropString(objname, property)
             #val = str(value)
             #expr = sympy.parsing.sympy_parser.parse_expr(val)
             #expr = self.fix(expr)
@@ -35,7 +36,7 @@ class SymbolPool():
             self.replacements[key] = expr
 
     def getSymbol(self, objname, property, nonnegative=False):
-        key = '%s.%s' % (objname, property)
+        key = Globals.getPropString(objname, property)
         r = self.replacements.get(key, key)
         if type(r) == str:
             return sympy.Symbol(key, nonnegative=nonnegative)
@@ -43,7 +44,7 @@ class SymbolPool():
             return sympy.Number(r)
 
     def getFunction(self, objname, property, args=[], nonnegative=False):
-        key = '%s.%s' % (objname, property)
+        key = Globals.getPropString(objname, property)
         r = self.replacements.get(key, None)
         if r == None:
             # There is no replacement, create a function
