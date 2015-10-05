@@ -77,6 +77,38 @@ class T3Engine():
                 return obj
         raise Exception('could not find object named %s' % name)
 
+    def inferPairAngle(self, obja, atta, objb, attb):
+        x1 = obja['tr.x']
+        y1 = obja['tr.y']
+        x2 = objb['tr.x']
+        y2 = objb['tr.y']
+        a1 = obja['rt.angle']
+        a2 = objb['rt.angle']
+
+        # Convert the attachments to polar, add the body angle
+        # and then reconvert to rectangular
+        
+        att1 = Globals.convertAttachment(atta, 'p')
+        if att1[0] != 0:
+            att1 = (att1[0], a1 + att1[1], att1[2])
+            i1, j1, m1 = Globals.convertAttachment(att1, 'r')
+        else:
+            i1 = 0
+            j1 = 0
+
+        att2 = Globals.convertAttachment(attb, 'p')
+        if att2[0] != 0:
+            att2 = (att2[0], a2 + att2[1], att2[2])
+            i2, j2, m2 = Globals.convertAttachment(att2, 'r')
+        else:
+            i2 = 0
+            j2 = 0
+
+        dx = sympy.sympify((x2 + i2) - (x1 + i1))
+        dy = sympy.sympify((y2 + j2) - (y1 + j1))
+
+        return sympy.sympify(sympy.atan2(dx, dy))
+
     def loadObject(self, name, props, data, aliases):
         pos = data['pos']
         shape = data['shape']
@@ -120,6 +152,7 @@ class T3Engine():
             return str(p)
 
         # Resolve the attachments 
+        attexprs = []
         for b, m, o in zip(bodies, attmodes, attoffs):
             if o != None:
                 if m == 'p':
@@ -128,8 +161,11 @@ class T3Engine():
                 elif m == 'r':
                     ata = Globals.getAttachProp(b['$.name'], 'x')
                     atb = Globals.getAttachProp(b['$.name'], 'y')
-                self.symbols.addReplacement(name, ata, o[0])
-                self.symbols.addReplacement(name, atb, o[1])
+
+                o = (self.symbols.addReplacement(name, ata, o[0]),
+                     self.symbols.addReplacement(name, atb, o[1]))
+
+                attexprs.append(o)
 
         # Switch the dynamic type
         if dyn == 'force':
@@ -166,6 +202,9 @@ class T3Engine():
             pos = (offs['x1'], offs['y1'], 
                    offs['x2'], offs['y2'])
 
+            th = self.inferPairAngle(bodies[0], attexprs[0] + (attmodes[0],), 
+                                     bodies[1], attexprs[1] + (attmodes[1],))
+
             att0 = (bodies[0], attmodes[0])
             att1 = (bodies[1], attmodes[1])
 
@@ -181,6 +220,9 @@ class T3Engine():
 
             pos = (offs['x1'], offs['y1'], 
                    offs['x2'], offs['y2'])
+
+            th = self.inferPairAngle(bodies[0], attexprs[0] + (attmodes[0],), 
+                                     bodies[1], attexprs[1] + (attmodes[1],))
 
             att0 = (bodies[0], attmodes[0])
             att1 = (bodies[1], attmodes[1])
@@ -199,6 +241,9 @@ class T3Engine():
 
             pos = (offs['x1'], offs['y1'], 
                    offs['x2'], offs['y2'])
+
+            th = self.inferPairAngle(bodies[0], attexprs[0] + (attmodes[0],), 
+                                     bodies[1], attexprs[1] + (attmodes[1],))
 
             att0 = (bodies[0], attmodes[0])
             att1 = (bodies[1], attmodes[1])
