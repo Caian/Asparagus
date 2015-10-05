@@ -549,7 +549,10 @@ class T3Engine():
             les = dyn.getLEqns()
             for le in les:
                 le = sympy.simplify(le)
-                self.scene['equations'].append(le)
+                if le == True:
+                    self.printer.print_diagnostic(3, 'link equation was reduced to 0 == 0 due to constraints and will be ignored.')
+                else:
+                    self.scene['equations'].append(le)
         seq = []
         for eq in self.scene['equations']:
             seq.append(str(eq))
