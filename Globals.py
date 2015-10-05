@@ -18,6 +18,7 @@
 #
 
 import sympy
+from sympy.parsing.sympy_parser import parse_expr
 
 def time(symbols): 
     return symbols.getSymbol('$global', 'time', nonnegative=True)
@@ -64,6 +65,20 @@ def convertAttachment(att, mode = 't'):
             raise Exception('invalid attachment mode %s' % str(m))
     else:
         raise Exception('invalid attachment mode %s' % str(mode))
+
+def positify(expr, symbag):
+    if expr.is_Symbol:
+        symbag[expr] = sympy.Symbol(expr.name, positive=True)
+    else:
+        for arg in expr.args:
+            positify(arg, symbag)
+
+def parseExpr(expr):
+    symbag = {}
+    expr = parse_expr(expr)
+    positify(expr, symbag)
+    expr = expr.subs(symbag)
+    return expr
 
 def no_alias(t):
     return t

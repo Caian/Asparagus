@@ -19,28 +19,17 @@
 
 import sympy
 import Globals
-from sympy.parsing.sympy_parser import parse_expr
 
 class SymbolPool():
     def __init__(self):
         self.replacements = {}
 
-    def positify(self, expr, symbag):
-        if expr.is_Symbol:
-            symbag[expr] = sympy.Symbol(expr.name, positive=True)
-        else:
-            for arg in expr.args:
-                positify(self, arg, symbag)
-
     def addReplacement(self, objname, property, value):
-            key = Globals.getPropString(objname, property)
-            val = str(value)
-            expr = parse_expr(val)
-            symbag = {}
-            self.positify(expr, symbag)
-            expr = expr.subs(symbag)
-            self.replacements[key] = expr
-            return expr
+        key = Globals.getPropString(objname, property)
+        val = str(value)
+        expr = Globals.parseExpr(val)
+        self.replacements[key] = expr
+        return expr
 
     def getSymbol(self, objname, property, nonnegative=False):
         key = Globals.getPropString(objname, property)
