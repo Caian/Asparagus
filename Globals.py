@@ -74,6 +74,8 @@ def positify(expr, symbag):
             positify(arg, symbag)
 
 def parseExpr(expr):
+    if expr[0] == '"' and expr[-1] == '"':
+        expr = expr[1:-1]
     symbag = {}
     expr = parse_expr(expr)
     positify(expr, symbag)
