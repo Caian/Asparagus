@@ -75,6 +75,9 @@ def getDefaultForeColor():
 def getDefaultBackColor():
     return QtGui.QColor('white')
 
+def getDefaultHighlightColor():
+    return QtGui.QColor.fromRgb(0x00c6de)
+
 def getDefaultTickness():
     return 3.0
 
@@ -123,16 +126,18 @@ def getDefaultFont():
     font.setPixelSize(24)
     return font
 
-def getDefaultPen():
+def getDefaultPen(highlighted = False):
     pen = QtGui.QPen()
-    pen.setColor(getDefaultForeColor())
+    pen.setColor(getDefaultForeColor() if not highlighted else 
+                 getDefaultHighlightColor())
     pen.setWidthF(getDefaultTickness())
     pen.setCapStyle(QtCore.Qt.RoundCap)
     pen.setJoinStyle(QtCore.Qt.RoundJoin)
     return pen
 
-def getDefaultForeBrush():
-    return getDefaultForeColor()
+def getDefaultForeBrush(highlighted = False):
+    return (getDefaultForeColor() if not highlighted else 
+            getDefaultHighlightColor())
 
 def getDefaultBackBrush():
     return getDefaultBackColor()
@@ -140,6 +145,7 @@ def getDefaultBackBrush():
 class SceneItem(QtGui.QGraphicsObject):
     def __init__(self):
         super(SceneItem, self).__init__()
+        self.highlighted = False
 
 class PairPointItem(SceneItem):
     def __init__(self, x0, y0, x1, y1):
@@ -175,7 +181,7 @@ class Box(SceneObjectItem):
         h = self.height
         hw = w / 2.0
         hh = h / 2.0
-        pen = getDefaultPen()
+        pen = getDefaultPen(self.highlighted)
         brush = getDefaultBackBrush()
         painter.setBrush(brush)
         painter.setPen(pen)
@@ -209,7 +215,7 @@ class Ball(SceneObjectItem):
         h = self.height
         hw = w / 2.0
         hh = h / 2.0
-        pen = getDefaultPen()
+        pen = getDefaultPen(self.highlighted)
         brush = getDefaultBackBrush()
         painter.setBrush(brush)
         painter.setPen(pen)
@@ -246,9 +252,9 @@ class Arrow(PairPointItem):
         hh = self.headHeight
         angle = 180 * math.atan2(dy, dx) / math.pi
         length = math.sqrt((dx**2)+(dy**2))
-        pen = getDefaultPen()
+        pen = getDefaultPen(self.highlighted)
         pen.setWidthF(self.lineWidth)
-        brush = getDefaultForeBrush()
+        brush = getDefaultForeBrush(self.highlighted)
         painter.setPen(pen)
         painter.setBrush(brush)
         painter.rotate(angle)
@@ -290,7 +296,7 @@ class Rod(PairPointItem):
         dy = self.y1 - self.y0
         angle = 180 * math.atan2(dy, dx) / math.pi
         length = math.sqrt((dx**2)+(dy**2))
-        pen = getDefaultPen()
+        pen = getDefaultPen(self.highlighted)
         pen.setWidthF(self.lineWidth)
         painter.setPen(pen)
         painter.rotate(angle)
@@ -348,7 +354,7 @@ class Spring(PairPointItem):
         n = 4
         dw = sw/n
         j = sh/2
-        pen = getDefaultPen()
+        pen = getDefaultPen(self.highlighted)
         pen.setWidthF(self.lineWidth)
         painter.setPen(pen)
         painter.rotate(angle)
@@ -399,9 +405,9 @@ class Dampener(PairPointItem):
         dx1 = (length+dw)/2.0
         dy0 = -dh/2.0
         dy1 = dh/2.0
-        pen = getDefaultPen()
+        pen = getDefaultPen(self.highlighted)
         pen.setWidthF(self.lineWidth)
-        brush = getDefaultForeBrush()
+        brush = getDefaultForeBrush(self.highlighted)
         painter.setPen(pen)
         painter.setBrush(brush)
         painter.rotate(angle)
@@ -452,7 +458,7 @@ class Wall(PairPointItem):
         w = self.stripeWidth
         d0 = self.stripeStart
         d = self.stripeStep
-        pen = getDefaultPen()
+        pen = getDefaultPen(self.highlighted)
         pen.setWidthF(self.lineWidth)
         painter.setPen(pen)
         painter.drawLine(QtCore.QPointF(0, 0), QtCore.QPointF(dx, dy))
@@ -498,7 +504,7 @@ class ThetaPairDisplay(SceneItem):
         hangle = -math.pi/2 - angle/2
         hangle2 = math.pi/2 - angle - math.pi/4
         rect = QtCore.QRect(-r, -r, 2*r, 2*r)
-        pen = getDefaultPen()
+        pen = getDefaultPen(self.highlighted)
         pen.setWidthF(self.lineWidth)
         painter.setPen(pen)
         painter.drawPie(rect, -16*(-90), -16*(180*angle/math.pi))
