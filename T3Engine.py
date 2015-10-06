@@ -109,6 +109,52 @@ class T3Engine():
 
         return sympy.sympify(sympy.atan2(dx, dy))
 
+    def assertPairAngle(self, dyn):
+        x1 = dyn.obja['tr.x']
+        y1 = dyn.obja['tr.y']
+        x2 = dyn.objb['tr.x']
+        y2 = dyn.objb['tr.y']
+        a1 = dyn.obja['rt.angle']
+        a2 = dyn.objb['rt.angle']
+        thetaa = dyn.thetaa
+        name = dyn.name
+
+        if not isTimeConstant(thetaa, self.symbols):
+            return True
+
+        # Convert the attachments to polar, add the body angle
+        # and then reconvert to rectangular
+        
+        att1 = dyn.getAttachment(dyn.obja, 'p')
+        if att1[0] != 0:
+            att1 = (att1[0], a1 + att1[1], att1[2])
+            i1, j1, m1 = Globals.convertAttachment(att1, 'r')
+        else:
+            i1 = 0
+            j1 = 0
+
+        att2 = dyn.getAttachment(dyn.objb, 'p')
+        if att2[0] != 0:
+            att2 = (att2[0], a2 + att2[1], att2[2])
+            i2, j2, m2 = Globals.convertAttachment(att2, 'r')
+        else:
+            i2 = 0
+            j2 = 0
+
+        dx = sympy.sympify((x2 + i2) - (x1 + i1))
+        dy = sympy.sympify((y2 + j2) - (y1 + j1))
+
+        if dx == 0 and sympy.simplify(sympy.Mod(thetaa,sympy.pi)) != 0:
+            self.printer.print_diagnostic(2, 'thetaa assertion failed for dynamic %s, set=%s, inferred=%s.' % 
+                (name, str(thetaa), str(sympy.sympify(sympy.atan2(dx, dy)))))
+            return False
+        elif dy == 0 and sympy.simplify(sympy.Mod(thetaa+sympy.pi/2,sympy.pi)) != 0:
+            self.printer.print_diagnostic(2, 'thetaa assertion failed for dynamic %s, set=%s, inferred=%s.' % 
+                (name, str(thetaa), str(sympy.sympify(sympy.atan2(dx, dy)))))
+            return False
+
+        return True
+
     def loadObject(self, name, props, data, aliases):
         pos = data['pos']
         shape = data['shape']
@@ -152,7 +198,6 @@ class T3Engine():
             return str(p)
 
         # Resolve the attachments 
-        attexprs = []
         for b, m, o in zip(bodies, attmodes, attoffs):
             if o != None:
                 if m == 'p':
@@ -162,10 +207,8 @@ class T3Engine():
                     ata = Globals.getAttachProp(b['$.name'], 'x')
                     atb = Globals.getAttachProp(b['$.name'], 'y')
 
-                o = (self.symbols.addReplacement(name, ata, o[0]),
-                     self.symbols.addReplacement(name, atb, o[1]))
-
-                attexprs.append(o)
+                self.symbols.addReplacement(name, ata, o[0])
+                self.symbols.addReplacement(name, atb, o[1])
 
         # Switch the dynamic type
         if dyn == 'force':
@@ -202,14 +245,11 @@ class T3Engine():
             pos = (offs['x1'], offs['y1'], 
                    offs['x2'], offs['y2'])
 
-            th = self.inferPairAngle(bodies[0], attexprs[0] + (attmodes[0],), 
-                                     bodies[1], attexprs[1] + (attmodes[1],))
-
             att0 = (bodies[0], attmodes[0])
             att1 = (bodies[1], attmodes[1])
 
             d = Dynamics.RodDynamic(name, att0, att1, self.symbols)
-
+            
             aliasify('l', d.l)
             t = aliasify('thetaa', d.thetaa)
             title = aliasify('T', d.getTSym())
@@ -221,14 +261,11 @@ class T3Engine():
             pos = (offs['x1'], offs['y1'], 
                    offs['x2'], offs['y2'])
 
-            th = self.inferPairAngle(bodies[0], attexprs[0] + (attmodes[0],), 
-                                     bodies[1], attexprs[1] + (attmodes[1],))
-
             att0 = (bodies[0], attmodes[0])
             att1 = (bodies[1], attmodes[1])
 
             d = Dynamics.SpringDynamic(name, att0, att1, self.symbols)
-
+            
             aliasify('l', d.l)
             aliasify('d', d.d)
             aliasify('T', d.getTSym())
@@ -242,14 +279,11 @@ class T3Engine():
             pos = (offs['x1'], offs['y1'], 
                    offs['x2'], offs['y2'])
 
-            th = self.inferPairAngle(bodies[0], attexprs[0] + (attmodes[0],), 
-                                     bodies[1], attexprs[1] + (attmodes[1],))
-
             att0 = (bodies[0], attmodes[0])
             att1 = (bodies[1], attmodes[1])
 
             d = Dynamics.DampenerDynamic(name, att0, att1, self.symbols)
-
+            
             aliasify('l', d.l)
             aliasify('d', d.d)
             aliasify('T', d.getTSym())
@@ -365,10 +399,16 @@ class T3Engine():
         self.solve()
 
     def solve(self):
+        self.assertState()
         self.solveAssembly()
         self.solveIC()
         self.solveRefFrames()
         self.solveEquations()
+
+    def assertState(self):
+        for dyn in self.scene['dynamics']:
+            if issubclass(type(dyn), Dynamics.PairDynamic): 
+                self.assertPairAngle(dyn)
 
     def solveAssembly(self):
         self.printer.print_diagnostic(3, 'processing system...')
