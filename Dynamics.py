@@ -68,6 +68,10 @@ class Dynamic:
     def getAttachment(self, obj, mode):
         # (distance from center of mass, angle)
         return (None, None) 
+
+#                                                           #
+###################### Linear Dynamics ######################
+#                                                           #
         
 # One-body force that does not depend on any variable 
 # of the system other than, possibly, time
@@ -144,7 +148,7 @@ class PairDynamic(Dynamic):
     #        (self.objb['tr.y'].subs(Globals.time,0) - self.obja['tr.y'].subs(Globals.time,0))**2
     #    )
     
-# Dynamic representing a rigid connection between two bodies
+# Dynamic representing a rigid linear connection between two bodies
 # where the traction force is a free variable
 class RodDynamic(PairDynamic):
     def __init__(self, name, atta, attb, symbols):
@@ -257,3 +261,85 @@ class DampenerDynamic(ActiveDynamic):
         
     def getTSym(self):
         return self.b * self.getDSym().diff(Globals.time(self.symbols))
+
+
+#                                                            #
+###################### Angular Dynamics ######################
+#                                                            #
+
+# Dynamic representing a rigid angular connection between two bodies
+# where the traction force is a free variable
+class BeltDynamic(PairDynamic):
+    def __init__(self, name, atta, attb, symbols, crossed):
+        PairDynamic.__init__(self, name, atta, attb, symbols)
+        # r1a1 = r2a2 if not crossed, otherwise r1a1 = -r2a2
+        self.crossed = crossed
+        
+    def getTSym(self):
+        return self.symbols.getSymbol(self.name, 'T', nonnegative=True)
+    
+    def getDSym(self):
+        return 0
+    
+    def getDExpr(self, obj):
+        # Select the proper attachment
+        if obj == self.obja:
+            att = self.atta
+            # Inverted because of the -1 inherent from the torque 
+            # direction with respect to the reference
+            mul = 1 if self.crossed else -1 
+        elif obj == self.objb:
+            att = self.attb
+            mul = 1
+        else:
+            raise Exception('invalid object')
+
+        att1 = convertAttachment(att, 'p')
+        if att1[0] != 0:
+            att1 = (att1[0], a1 + att1[1], att1[2])
+            i1, j1, m1 = convertAttachment(att1, 'r')
+        else:
+            raise Exception('coupling radius of %s to %s is zero' % (self.name, obj['$.name']))
+
+        # Return a pure torque
+        return (mul * i1 * self.getTSym(), None)
+
+    def getLEqns(self):
+        # Algebraic Links
+        a1 = self.obja['rt.angle']
+        a2 = self.objb['rt.angle']
+
+        # Convert the attachments to polar, add the body angle
+        # and then reconvert to rectangular
+        
+        att1 = convertAttachment(self.atta, 'p')
+        if att1[0] != 0:
+            att1 = (att1[0], a1 + att1[1], att1[2])
+            i1, j1, m1 = convertAttachment(att1, 'r')
+        else:
+            raise Exception('coupling radius of %s to %s is zero' % (self.name, self.obja['$.name']))
+
+        att2 = convertAttachment(self.attb, 'p')
+        if att2[0] != 0:
+            att2 = (att2[0], a2 + att2[1], att2[2])
+            i2, j2, m2 = convertAttachment(att2, 'r')
+        else:
+            raise Exception('coupling radius of %s to %s is zero' % (self.name, self.objb['$.name']))
+
+        return [
+            sympy.Eq(a2, (i1 / i2) * a1) if not self.crossed else
+            sympy.Eq(a2, -(i1 / i2) * a1)
+        ]
+    
+    def getIEqns(self):
+        # Initial Condition
+        return (
+            sympy.Eq(self.l, self.getLength()),
+        )
+    
+    def simplify1DD(self, expr):
+        return expr
+        
+    def simplify1DL(self, linkeqns):
+        return linkeqns
+    
