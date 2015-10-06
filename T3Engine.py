@@ -304,7 +304,7 @@ class T3Engine():
         self.printer.print_dynamic(name, dyn, pos, title, props)
 
         # Draw the angle of the dynamic, if specified
-        if showangles:
+        if showangles == '1' or showangles == True:
             self.printer.print_angle(name, t)
 
     def loadGlobals(self, name, aliases):
