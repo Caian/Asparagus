@@ -257,6 +257,24 @@ class DampenerDynamic(ActiveDynamic):
 ###################### Angular Dynamics ######################
 #                                                            #
 
+# One-body torque that does not depend on any variable 
+# of the system other than, possibly, time
+class TorqueDynamic(Dynamic):
+    def __init__(self, name, symbols, flipped):
+        Dynamic.__init__(self, name, symbols)
+        self.flipped = flipped
+
+    def getFSym(self):
+        # Not actually nonnegative, but makes analysis easier
+        return self.symbols.getSymbol(self.name, 'T', nonnegative=True)
+    
+    def getDExpr(self, obj):
+        if obj != self.obj:
+            raise Exception('invalid object')
+        # Return the torque in polar coordinates
+        f = self.getFSym()
+        return (f if not self.flipped else -f, None)
+
 # Dynamic representing a rigid angular connection between two bodies
 # where the traction force is a free variable
 class BeltDynamic(PairDynamic):
