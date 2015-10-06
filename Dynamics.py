@@ -55,10 +55,6 @@ class Dynamic:
         # Algebraic Links
         return ()
     
-    def getIEqns(self):
-        # Initial Conditions
-        return ()
-        
     def simplify1DD(self, expr):
         return expr
         
@@ -210,12 +206,6 @@ class RodDynamic(PairDynamic):
             sympy.Eq(y2, y1 + j1 + (l+d)*sympy.cos(td) - j2),
         ]
     
-    def getIEqns(self):
-        # Initial Condition
-        return (
-            sympy.Eq(self.l, self.getLength()),
-        )
-    
     def simplify1DD(self, expr):
         return expr
         
@@ -330,12 +320,6 @@ class BeltDynamic(PairDynamic):
             sympy.Eq(a2, (i1 / i2) * a1) if not self.crossed else
             sympy.Eq(a2, -(i1 / i2) * a1)
         ]
-    
-    def getIEqns(self):
-        # Initial Condition
-        return (
-            sympy.Eq(self.l, self.getLength()),
-        )
     
     def simplify1DD(self, expr):
         return expr
