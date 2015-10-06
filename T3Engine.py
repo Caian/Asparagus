@@ -407,7 +407,7 @@ class T3Engine():
 
     def assertState(self):
         for dyn in self.scene['dynamics']:
-            if issubclass(type(dyn), Dynamics.PairDynamic): 
+            if issubclass(type(dyn), Dynamics.RodDynamic): 
                 self.assertPairAngle(dyn)
 
     def solveAssembly(self):
