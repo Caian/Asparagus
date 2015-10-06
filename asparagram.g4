@@ -51,7 +51,7 @@ rlDynStmts : rlCallStmt
            | rlSetStmt
            ;
 
-rlCallStmt : TKCALL rlProperty TKID
+rlCallStmt : TKCALL rlProperty (TKID | TKEMS)
            ;
 
 rlSetStmt : TKSET rlProperty rlValue
@@ -127,10 +127,10 @@ TKCOM  : ',' ;
 TKDOT  : '.' ;
 TKNUM  : '-'?(([0-9]+('.'?[0-9]+)?) | ('.'[0-9])) ;
 TKID   : [a-zA-Z][a-zA-Z0-9_{}]* ;
+TKEMS  : '"' '"' ;
 TKEXPR : '"' ( '\\"' | . )*? '"' ;
 // Comments were moved to a pre-processing stage 
 // due to the poor performance of nongreedy subrules 
 // in the antlr runtime for python
 // TKCOMM : '%' ~[\r\n]* -> skip ;
 TKWS   : [ \t\r\n]+ -> skip ;
-

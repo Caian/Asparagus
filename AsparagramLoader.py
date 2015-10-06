@@ -164,7 +164,7 @@ class AsparagramLoader(asparagramVisitor):
     def visitRlCallStmt(self, ctx:asparagramParser.RlCallStmtContext):
         name = ctx.getChild(1).getText()
         value = ctx.getChild(2).getText()
-        return ('call', name, value)
+        return ('call', name, '' if value == '""' else value)
 
 
     # Visit a parse tree produced by asparagramParser#rlSetStmt.
