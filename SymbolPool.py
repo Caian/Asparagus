@@ -35,7 +35,7 @@ class SymbolPool():
         key = Globals.getPropString(objname, property)
         r = self.replacements.get(key, key)
         if type(r) == str:
-            return sympy.Symbol(key, nonnegative=nonnegative)
+            return sympy.Symbol(key, nonnegative=nonnegative, real=True)
         else:
             return r
 
@@ -44,13 +44,13 @@ class SymbolPool():
         r = self.replacements.get(key, None)
         if r == None:
             # There is no replacement, create a function
-            f = sympy.Function(key, nonnegative=nonnegative)
+            f = sympy.Function(key, nonnegative=nonnegative, real=True)
             if len(args) > 0:
                 return f(*args)
             else:
                 return f
         elif type(r) == str:
             # A replacement here means constant symbol
-            return sympy.Symbol(r, nonnegative=nonnegative)
+            return sympy.Symbol(r, nonnegative=nonnegative, real=True)
         else:
             return r
