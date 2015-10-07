@@ -591,12 +591,12 @@ class T3Engine():
                             if not roll:
                                 # Compute the torque angle
                                 tangle = ata + sympy.pi / 2 + obj['rt.angle']
+                            else :
+                                # Compute the torque angle without considering the body rotation
+                                tangle = ata + sympy.pi / 2
 
-                                # Compute the projection of the force onto the torque direction
-                                torque = sympy.simplify(force * atd * sympy.cos(angle - tangle))
-                            else:
-                                # Compute the torque of a perpendicular force
-                                torque = sympy.simplify(force * atd)
+                            # Compute the projection of the force onto the torque direction
+                            torque = sympy.simplify(force * atd * sympy.cos(angle - tangle))
                             rhst += torque
 
                 elif not ca:
