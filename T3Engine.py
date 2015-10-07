@@ -197,6 +197,38 @@ class T3Engine():
                 self.aliases[p] = alias
             return str(p)
 
+        # Roll assertions
+
+        def get0Rolls(what):
+            roll = props.get('roll', None)
+            if roll == None:
+                roll = props.get('rolla', None)
+
+            if roll == '1' or roll == "1":
+                self.printer.print_diagnostic(2, 'dynamic %s does not have roll because it is %s.' % (name, what))
+
+        def get1Roll():
+            roll = props.get('roll', None)
+            if roll == None:
+                roll = props.get('rolla', None)
+
+            if roll == '1' or roll == "1":
+                self.printer.print_diagnostic(3, 'dynamic %s set to roll mode on body %s.' % (name, bodies[0]['$.name']))
+                roll = True
+            return roll
+
+        def get2Rolls():
+            rolla = props.get('rolla', None)
+            if rolla == '1' or rolla == "1":
+                self.printer.print_diagnostic(3, 'dynamic %s set to roll mode on body %s.' % (name, bodies[0]['$.name']))
+                rolla = True
+
+            rollb = props.get('rollb', None)
+            if rollb == '1' or rollb == "1":
+                self.printer.print_diagnostic(3, 'dynamic %s set to roll mode on body %s.' % (name, bodies[1]['$.name']))
+                rollb = True
+            return (rolla, rollb)
+
         # Resolve the attachments 
         for b, m, o in zip(bodies, attmodes, attoffs):
             if o != None:
@@ -220,7 +252,10 @@ class T3Engine():
 
             att = (bodies[0], attmodes[0])
 
-            d = Dynamics.ForceDynamic(name, att, self.symbols)
+            # Constant Force has only one roll
+            roll = get1Roll()
+
+            d = Dynamics.ForceDynamic(name, att, roll, self.symbols)
 
             t = aliasify('theta', d.theta)
             title = aliasify('F', d.getFSym())
@@ -233,6 +268,9 @@ class T3Engine():
             pos = (offs['x1'], offs['y1'], 
                    offs['x2'], offs['y2'])
 
+            # Weight Force has only no rolls :/
+            get0Rolls('weight')
+            
             d = Dynamics.WeightDynamic(name, bodies[0], self.symbols)
 
             title = str(d.getFSym())
@@ -248,7 +286,10 @@ class T3Engine():
             att0 = (bodies[0], attmodes[0])
             att1 = (bodies[1], attmodes[1])
 
-            d = Dynamics.RodDynamic(name, att0, att1, self.symbols)
+            # Rod has two rolls, for a and b points
+            rolla, rollb = get2Rolls()
+            
+            d = Dynamics.RodDynamic(name, att0, rolla, att1, rollb, self.symbols)
             
             aliasify('l', d.l)
             t = aliasify('thetaa', d.thetaa)
@@ -264,7 +305,10 @@ class T3Engine():
             att0 = (bodies[0], attmodes[0])
             att1 = (bodies[1], attmodes[1])
 
-            d = Dynamics.SpringDynamic(name, att0, att1, self.symbols)
+            # Spring has two rolls, for a and b points
+            rolla, rollb = get2Rolls()
+
+            d = Dynamics.SpringDynamic(name, att0, rolla, att1, rollb, self.symbols)
             
             aliasify('l', d.l)
             aliasify('d', d.d)
@@ -282,7 +326,10 @@ class T3Engine():
             att0 = (bodies[0], attmodes[0])
             att1 = (bodies[1], attmodes[1])
 
-            d = Dynamics.DampenerDynamic(name, att0, att1, self.symbols)
+            # Dampener has two rolls, for a and b points
+            rolla, rollb = get2Rolls()
+
+            d = Dynamics.DampenerDynamic(name, att0, rolla, att1, rollb, self.symbols)
             
             aliasify('l', d.l)
             aliasify('d', d.d)
@@ -519,7 +566,8 @@ class T3Engine():
             ca = isTimeConstant(obj['rt.angle'], self.symbols)
             for i in expr['rhs']:
                 force = i[0]
-                dyn = i[2]
+                dyn = i[-1]
+                roll = i[2] == 'roll'
                 angle = i[1]
                 # Compute the force components
                 if angle != None:
@@ -537,12 +585,18 @@ class T3Engine():
                         # Compute the torque components
                         atd, ata, atm = dyn.getAttachment(obj, 'p')
                         if atd != 0:
-                            # Compute the torque angle
-                            tangle = ata + sympy.pi / 2 + obj['rt.angle']
+                            # Roll dynamics will assume a force perpendicular to the radius vector
+                            if not roll:
+                                # Compute the torque angle
+                                tangle = ata + sympy.pi / 2 + obj['rt.angle']
 
-                            # Compute the projection of the force onto the torque direction
-                            torque = sympy.simplify(force * atd * sympy.cos(angle - tangle))
+                                # Compute the projection of the force onto the torque direction
+                                torque = sympy.simplify(force * atd * sympy.cos(angle - tangle))
+                            else:
+                                # Compute the torque of a perpendicular force
+                                torque = sympy.simplify(force * atd)
                             rhst += torque
+
                 elif not ca:
                     # The force is actually a torque...
                     rhst += force

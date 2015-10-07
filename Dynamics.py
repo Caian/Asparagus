@@ -72,11 +72,12 @@ class Dynamic:
 # One-body force that does not depend on any variable 
 # of the system other than, possibly, time
 class ForceDynamic(Dynamic):
-    def __init__(self, name, att, symbols):
+    def __init__(self, name, att, roll, symbols):
         Dynamic.__init__(self, name, symbols)
         self.theta = self.symbols.getSymbol(self.name, 'theta')
         self.obj = att[0]
         self.att = self.mkattach(att[0], att[1])
+        self.roll = roll
 
     def getFSym(self):
         # Not actually nonnegative, but makes analysis easier
@@ -86,7 +87,7 @@ class ForceDynamic(Dynamic):
         if obj != self.obj:
             raise Exception('invalid object')
         # Return the force in polar coordinates
-        return (self.getFSym(), self.theta)
+        return (self.getFSym(), self.theta, 'roll' if self.roll else '')
 
     def getAttachment(self, obj, mode):
         if obj != self.obj:
@@ -107,7 +108,7 @@ class WeightDynamic(Dynamic):
         if obj != self.obj:
             raise Exception('invalid object')
         # Return the force in polar coordinates
-        return (self.getFSym(), Globals.gravity(self.symbols)[1])
+        return (self.getFSym(), Globals.gravity(self.symbols)[1], '')
 
     def getAttachment(self, obj, mode):
         if obj != self.obj:
@@ -117,12 +118,14 @@ class WeightDynamic(Dynamic):
         
 # Base class for dynamics that connect two objects
 class PairDynamic(Dynamic):
-    def __init__(self, name, atta, attb, symbols):
+    def __init__(self, name, atta, rolla, attb, rollb, symbols):
         Dynamic.__init__(self, name, symbols)
         self.obja = atta[0]
         self.objb = attb[0]
         self.atta = self.mkattach(atta[0], atta[1])
         self.attb = self.mkattach(attb[0], attb[1])
+        self.rolla = rolla
+        self.rollb = rollb
 
     def getAttachment(self, obj, mode):
         # (distance from center of mass, angle)
@@ -147,8 +150,8 @@ class PairDynamic(Dynamic):
 # Dynamic representing a rigid linear connection between two bodies
 # where the traction force is a free variable
 class RodDynamic(PairDynamic):
-    def __init__(self, name, atta, attb, symbols):
-        PairDynamic.__init__(self, name, atta, attb, symbols)
+    def __init__(self, name, atta, rolla, attb, rollb, symbols):
+        PairDynamic.__init__(self, name, atta, rolla, attb, rollb, symbols)
         self.l = self.symbols.getSymbol(self.name, 'l', nonnegative=True)
         self.thetaa = self.symbols.getFunction(self.name, 'thetaa', [Globals.time(self.symbols)])
         self.thetab = self.thetaa + sympy.pi
@@ -163,12 +166,14 @@ class RodDynamic(PairDynamic):
         # Select the proper theta
         if obj == self.obja:
             theta = self.thetaa
+            roll = self.rolla
         elif obj == self.objb:
             theta = self.thetab
+            roll = self.rollb
         else:
             raise Exception('invalid object')
         # Return the force in polar coordinates
-        return (self.getTSym(), theta)
+        return (self.getTSym(), theta, 'roll' if roll else '')
 
     def getLEqns(self):
         # Algebraic Links
@@ -215,8 +220,8 @@ class RodDynamic(PairDynamic):
 # Base class for rod dynamics where the traction force 
 # may be a function of the position of the bodies
 class ActiveDynamic(RodDynamic):
-    def __init__(self, name, atta, attb, symbols):
-        RodDynamic.__init__(self, name, atta, attb, symbols)
+    def __init__(self, name, atta, rolla, attb, rollb, symbols):
+        RodDynamic.__init__(self, name, atta, rolla, attb, rollb, symbols)
         self.d = self.symbols.getFunction(self.name, 'd', [Globals.time(self.symbols)])
     
     def getDSym(self):
@@ -235,8 +240,8 @@ class ActiveDynamic(RodDynamic):
 # Spring Dynamic, where the traction force is a 
 # function of the position of the bodies
 class SpringDynamic(ActiveDynamic):
-    def __init__(self, name, atta, attb, symbols):
-        ActiveDynamic.__init__(self, name, atta, attb, symbols)
+    def __init__(self, name, atta, rolla, attb, rollb, symbols):
+        ActiveDynamic.__init__(self, name, atta, rolla, attb, rollb, symbols)
         self.k = self.symbols.getSymbol(self.name, 'k', nonnegative=True)
         
     def getTSym(self):
@@ -245,8 +250,8 @@ class SpringDynamic(ActiveDynamic):
 # Spring Dynamic, where the traction force is a 
 # function of the velocity of the bodies
 class DampenerDynamic(ActiveDynamic):
-    def __init__(self, name, atta, attb, symbols):
-        ActiveDynamic.__init__(self, name, atta, attb, symbols)
+    def __init__(self, name, atta, rolla, attb, rollb, symbols):
+        ActiveDynamic.__init__(self, name, atta, rolla, attb, rollb, symbols)
         self.b = self.symbols.getSymbol(self.name, 'b', nonnegative=True)
         
     def getTSym(self):
@@ -273,7 +278,7 @@ class TorqueDynamic(Dynamic):
             raise Exception('invalid object')
         # Return the torque in polar coordinates
         f = self.getFSym()
-        return (f if not self.flipped else -f, None)
+        return (f if not self.flipped else -f, None, '')
 
 # Dynamic representing a rigid angular connection between two bodies
 # where the traction force is a free variable
@@ -310,7 +315,7 @@ class BeltDynamic(PairDynamic):
             raise Exception('coupling radius of %s to %s is zero' % (self.name, obj['$.name']))
 
         # Return a pure torque
-        return (mul * i1 * self.getTSym(), None)
+        return (mul * i1 * self.getTSym(), None, '')
 
     def getLEqns(self):
         # Algebraic Links
