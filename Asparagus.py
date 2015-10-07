@@ -22,9 +22,20 @@ from T3Engine import T3Engine
 from AsparagramLoader import AsparagramLoader
 
 def main():
+    fn = None
+    args = []
+    for arg in sys.argv[1:]:
+        if arg[:2] == '--':
+            args.append(arg)
+        elif fn != None:
+            print('Input file already defined')
+            exit(1)
+        else:
+            fn = arg
+
     printer = UI.init()
     loader = AsparagramLoader(sys.argv[1])
-    engine = T3Engine(printer)
+    engine = T3Engine(printer, args)
     engine.load(loader)
     sys.exit(UI.run())
 

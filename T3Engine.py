@@ -42,7 +42,8 @@ class AliasPrinter(StrPrinter):
 # Choo-Choooo
 
 class T3Engine():
-    def __init__(self, printing_iface):
+    def __init__(self, printing_iface, args):
+        self.args = args
         self.printer = printing_iface
         self.scene = None
         self.aliases = { }
@@ -443,7 +444,8 @@ class T3Engine():
         self.printer.print_diagnostic(3, 'scene loaded.')
 
         # Solve the system
-        self.solve()
+        if not '--nosolve' in self.args:
+            self.solve()
 
     def solve(self):
         self.assertState()
