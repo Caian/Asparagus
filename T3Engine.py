@@ -216,6 +216,9 @@ class T3Engine():
             if roll == '1' or roll == "1":
                 self.printer.print_diagnostic(3, 'dynamic %s set to roll mode on body %s.' % (name, bodies[0]['$.name']))
                 roll = True
+            else:
+                roll = False;
+
             return roll
 
         def get2Rolls():
@@ -223,11 +226,16 @@ class T3Engine():
             if rolla == '1' or rolla == "1":
                 self.printer.print_diagnostic(3, 'dynamic %s set to roll mode on body %s.' % (name, bodies[0]['$.name']))
                 rolla = True
+            else:
+                rolla = False;
 
             rollb = props.get('rollb', None)
             if rollb == '1' or rollb == "1":
                 self.printer.print_diagnostic(3, 'dynamic %s set to roll mode on body %s.' % (name, bodies[1]['$.name']))
                 rollb = True
+            else:
+                rollb = False;
+
             return (rolla, rollb)
 
         # Resolve the attachments 
@@ -647,6 +655,8 @@ class T3Engine():
                 le = sympy.simplify(le)
                 if le == True:
                     self.printer.print_diagnostic(3, 'link equation was reduced to 0 == 0 due to constraints and will be ignored.')
+                elif le == False:
+                    raise Exception('inconsistent system detected while processing dynamic %s' % dyn.name)
                 else:
                     self.scene['equations'].append(le)
         seq = []

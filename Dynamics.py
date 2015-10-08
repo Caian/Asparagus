@@ -192,16 +192,30 @@ class RodDynamic(PairDynamic):
         
         att1 = convertAttachment(self.atta, 'p')
         if att1[0] != 0:
-            att1 = (att1[0], a1 + att1[1], att1[2])
-            i1, j1, m1 = convertAttachment(att1, 'r')
+            if not self.rolla:
+                att1 = (att1[0], a1 + att1[1], att1[2])
+                i1, j1, m1 = convertAttachment(att1, 'r')
+            else:
+                i1, j1, m1 = convertAttachment(att1, 'r')
+                attr = (att1[0] * a1, att1[1] + sympy.pi / 2, att1[2])
+                ir, jr, mr = convertAttachment(attr, 'r')
+                ir += ir
+                jr += jr
         else:
             i1 = 0
             j1 = 0
 
         att2 = convertAttachment(self.attb, 'p')
         if att2[0] != 0:
-            att2 = (att2[0], a2 + att2[1], att2[2])
-            i2, j2, m2 = convertAttachment(att2, 'r')
+            if not self.rollb:
+                att2 = (att2[0], a2 + att2[1], att2[2])
+                i2, j2, m2 = convertAttachment(att2, 'r')
+            else:
+                i2, j2, m2 = convertAttachment(att2, 'r')
+                attr = (att2[0] * a2, att2[1] + sympy.pi / 2, att2[2])
+                ir, jr, mr = convertAttachment(attr, 'r')
+                i2 += ir
+                j2 += jr
         else:
             i2 = 0
             j2 = 0
