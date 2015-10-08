@@ -199,8 +199,8 @@ class RodDynamic(PairDynamic):
                 i1, j1, m1 = convertAttachment(att1, 'r')
                 attr = (att1[0] * a1, att1[1] + sympy.pi / 2, att1[2])
                 ir, jr, mr = convertAttachment(attr, 'r')
-                ir += ir
-                jr += jr
+                i1 += ir
+                j1 += jr
         else:
             i1 = 0
             j1 = 0
