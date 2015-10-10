@@ -277,10 +277,36 @@ class T3Engine():
             pos = (offs['x1'], offs['y1'], 
                    offs['x2'], offs['y2'])
 
-            # Weight Force has only no rolls :/
+            # Weight Force only has an att if the center of mass is different 
+            # from the fixture point, which means the translation axes MUST
+            # be fixed, enforce this rule
+
+            # By default the attachment must be zero even if nothing is 
+            # specified (center of mass assumed)
+            mustlock = True
+
+            # Enforce att lock if the axes are not 
+            if not isTimeConstant(bodies[0]['tr.x'], self.symbols) or not isTimeConstant(bodies[0]['tr.y'], self.symbols):
+                if attoffs[0] != None:
+                    self.printer.print_diagnostic(2, 'offset for %s will be ignored because the body %s is not locked in x and y.' % (name, bodies[0]['$.name']))
+            else:
+                if attoffs[0] != None:
+                    mustlock = False
+
+            if mustlock:
+                attmodes[0] = 'p'
+                ata = Globals.getAttachProp(b['$.name'], 'd')
+                atb = Globals.getAttachProp(b['$.name'], 'theta')
+                self.symbols.addReplacement(name, ata, 0)
+                self.symbols.addReplacement(name, atb, 0)
+
+            att = (bodies[0], attmodes[0])
+
+            # Weight Force only has no rolls :/
+
             get0Rolls('weight')
             
-            d = Dynamics.WeightDynamic(name, bodies[0], self.symbols)
+            d = Dynamics.WeightDynamic(name, att, self.symbols)
 
             title = str(d.getFSym())
             showangles = False # Do not show theta for gravity

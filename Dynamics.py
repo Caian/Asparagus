@@ -97,9 +97,10 @@ class ForceDynamic(Dynamic):
     
 # One-body weight dynamic
 class WeightDynamic(Dynamic):
-    def __init__(self, name, obj, symbols):
+    def __init__(self, name, att, symbols):
         Dynamic.__init__(self, name, symbols)
-        self.obj = obj
+        self.obj = att[0]
+        self.att = self.mkattach(att[0], att[1])
 
     def getFSym(self):
         return self.obj['tr.mass'] * Globals.gravity(self.symbols)[0]
@@ -114,7 +115,7 @@ class WeightDynamic(Dynamic):
         if obj != self.obj:
             raise Exception('invalid object')
         # (distance from center of mass, angle)
-        return (0, 0, mode)
+        return convertAttachment(self.att, mode)
         
 # Base class for dynamics that connect two objects
 class PairDynamic(Dynamic):
