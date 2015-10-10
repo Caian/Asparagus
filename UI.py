@@ -52,15 +52,15 @@ class MainWindow(QtGui.QWidget):
         drawv.setRenderHint(QtGui.QPainter.HighQualityAntialiasing)
         drawv.setRenderHint(QtGui.QPainter.SmoothPixmapTransform)
         self.addDefaultElements()
-        #listv = QtGui.QListView(self)
-        #split = QtGui.QSplitter(self)
-        #split.addWidget(listv)
-        #split.addWidget(drawv)
-        #split.setStretchFactor(1, 4)
-        vbox = QtGui.QVBoxLayout(self)
-        #vbox.addWidget(split)
-        vbox.addWidget(drawv)
-        self.setLayout(vbox)
+        self.console = QtGui.QListWidget(self)
+        split = QtGui.QSplitter(self)
+        split.setOrientation(QtCore.Qt.Vertical)
+        split.addWidget(drawv)
+        split.addWidget(self.console)
+        split.setSizes([720 - 720//4, 720//4])
+        hbox = QtGui.QHBoxLayout(self)
+        hbox.addWidget(split)
+        self.setLayout(hbox)
         self.setGeometry(300, 150, 1280, 720)
         self.setWindowTitle('Asparagus')
         self.show()
@@ -132,7 +132,15 @@ class MainWindow(QtGui.QWidget):
         self.scene.addItem(a)
 
     def print_diagnostic(self, level, message):
-        print('[%s] (%d) %s' % (str(datetime.datetime.now()), level, message))
+        s = '[%s] (%d) %s' % (str(datetime.datetime.now()), level, message)
+        i = QtGui.QListWidgetItem(s)
+        b1 = QtGui.QColor.fromRgb(255, 90, 90)
+        self.console.addItem(i)
+        i.setSelected(True)
+        if level < 3:
+            i.setBackgroundColor(b1)
+        self.console.scrollToBottom()
+        print(s)
 
 #class Example(QtGui.QWidget):
     
