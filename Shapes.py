@@ -158,15 +158,17 @@ class PairPointItem(SceneItem):
         self.y1 = y1
 
 class SceneObjectItem(SceneItem):
-    def __init__(self, x, y, angle):
+    def __init__(self, x, y, angle, offx = 0, offy = 0):
         super(SceneObjectItem, self).__init__()
         self.setX(x)
         self.setY(y)
         self.angle = angle
+        self.offx = offx
+        self.offy = offy
 
 class Box(SceneObjectItem):
-    def __init__(self, x, y, width, height, angle, title):
-        super(Box, self).__init__(x, y, angle)
+    def __init__(self, x, y, width, height, angle, title, offx, offy):
+        super(Box, self).__init__(x, y, angle, offx, offy)
         self.title = texToRTF(title)
         self.width = width
         self.height = height
@@ -174,7 +176,7 @@ class Box(SceneObjectItem):
     def boundingRect(self):
         hw = self.width / 2.0
         hh = self.height / 2.0
-        return QtCore.QRectF(-hw, -hh, hw, hh)
+        return QtCore.QRectF(-hw-self.offx, -hh-self.offy, self.width, self.height)
 
     def paint(self, painter, option, widget):
         w = self.width
@@ -186,6 +188,7 @@ class Box(SceneObjectItem):
         painter.setBrush(brush)
         painter.setPen(pen)
         painter.rotate(self.angle)
+        painter.translate(-self.offx, -self.offy)
         painter.drawRect(-hw, -hh, w, h)
         painter.rotate(-self.angle)
         font = getDefaultFont()
@@ -199,8 +202,8 @@ class Box(SceneObjectItem):
         painter.drawStaticText(QtCore.QPointF(0, 0), text)
 
 class Ball(SceneObjectItem):
-    def __init__(self, x, y, width, height, angle, title):
-        super(Ball, self).__init__(x, y, angle)
+    def __init__(self, x, y, width, height, angle, title, offx, offy):
+        super(Ball, self).__init__(x, y, angle, offx, offy)
         self.title = texToRTF(title)
         self.width = width
         self.height = height
@@ -208,7 +211,7 @@ class Ball(SceneObjectItem):
     def boundingRect(self):
         hw = self.width / 2.0
         hh = self.height / 2.0
-        return QtCore.QRectF(-hw, -hh, hw, hh)
+        return QtCore.QRectF(-hw, -hh, self.width, self.height)
 
     def paint(self, painter, option, widget):
         w = self.width
@@ -220,6 +223,7 @@ class Ball(SceneObjectItem):
         painter.setBrush(brush)
         painter.setPen(pen)
         painter.rotate(self.angle)
+        painter.translate(-self.offx, -self.offy)
         painter.drawEllipse(-hw, -hh, w, h)
         painter.rotate(-self.angle)
         font = getDefaultFont()

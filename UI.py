@@ -76,14 +76,17 @@ class MainWindow(QtGui.QWidget):
 
     def print_object(self, name, pos, shape, alias, prop):
         t = shape['type']
+        offx = shape.get('offx', 0)
+        offy = shape.get('offy', 0)
         if t == 'box':
             a = shape['angle']
             w = shape['width']
             h = shape['height']
-            o = Shapes.Box(pos[0], pos[1], w, h, a, alias)
+            o = Shapes.Box(pos[0], pos[1], w, h, a, alias, offx, offy)
         elif t == 'ball':
+            a = shape['angle']
             w = h = shape['radius'] * 2
-            o = Shapes.Ball(pos[0], pos[1], w, h, 0, alias)
+            o = Shapes.Ball(pos[0], pos[1], w, h, a, alias, offx, offy)
         elif t == 'wall':
             w = shape['width']
             h = shape['height']
