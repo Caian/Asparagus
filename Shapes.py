@@ -94,7 +94,7 @@ def getDefaultArrowHeadHeight():
     return 20.0
 
 def getDefaultCArrowRadius():
-    return 30.0
+    return 15.0
 
 def getDefaultSpringWidth():
     return 45.0
@@ -118,13 +118,13 @@ def getDefaultAngularRefTickness():
     return 2.0
 
 def getDefaultRefFrameMargin():
-    return 10.0
+    return 30.0
 
 def getDefaultRefFrameSize():
     return 50.0
 
 def getDefaultRefFrameHeadWidth():
-    return 15.0
+    return 10.0
 
 def getDefaultRefFrameHeadHeight():
     return 10.0
@@ -143,8 +143,14 @@ def getDefaultRefFrameFontSize():
 
 def getDefaultFont():
     font = QtGui.QFont()
-    font.setFamily('Sans')
-    font.setPixelSize(24)
+    font.setFamily(getDefaultFontFamily())
+    font.setPixelSize(getDefaultFontSize())
+    return font
+
+def getDefaultRefFrameFont():
+    font = QtGui.QFont()
+    font.setFamily(getDefaultFontFamily())
+    font.setPixelSize(getDefaultRefFrameFontSize())
     return font
 
 def getDefaultPen(highlighted = False):
@@ -179,7 +185,7 @@ class PairPointItem(SceneItem):
         self.y1 = y1
 
 class SceneObjectItem(SceneItem):
-    def __init__(self, x, y, angle, offx = 0, offy = 0):
+    def __init__(self, x, y, angle, offx = 0, offy = 0, rfox = None, rfoy = None):
         super(SceneObjectItem, self).__init__()
         self.setX(x)
         self.setY(y)
@@ -187,9 +193,13 @@ class SceneObjectItem(SceneItem):
         self.offx = offx
         self.offy = offy
 
+        # Offsets for reference frame
+        self.rfox = rfox
+        self.rfoy = rfoy
+
 class Box(SceneObjectItem):
-    def __init__(self, x, y, width, height, angle, title, offx, offy):
-        super(Box, self).__init__(x, y, angle, offx, offy)
+    def __init__(self, x, y, width, height, angle, title, offx, offy, rfox = None, rfoy = None):
+        super(Box, self).__init__(x, y, angle, offx, offy, rfox, rfoy)
         self.title = texToRTF(title)
         self.width = width
         self.height = height
@@ -223,8 +233,8 @@ class Box(SceneObjectItem):
         painter.drawStaticText(QtCore.QPointF(0, 0), text)
 
 class Ball(SceneObjectItem):
-    def __init__(self, x, y, width, height, angle, title, offx, offy):
-        super(Ball, self).__init__(x, y, angle, offx, offy)
+    def __init__(self, x, y, width, height, angle, title, offx, offy, rfox = None, rfoy = None):
+        super(Ball, self).__init__(x, y, angle, offx, offy, rfox, rfoy)
         self.title = texToRTF(title)
         self.width = width
         self.height = height
@@ -258,7 +268,8 @@ class Ball(SceneObjectItem):
         painter.drawStaticText(QtCore.QPointF(0, 0), text)
 
 def ArrowPrimitive(x0, y0, x1, y1, headWidth, headHeight, 
-                   highlighted, lineWidth, title, painter):
+                   highlighted, lineWidth, title, font, 
+                   painter):
     dx = x1 - x0
     dy = y1 - y0
     hw = headWidth
@@ -279,8 +290,6 @@ def ArrowPrimitive(x0, y0, x1, y1, headWidth, headHeight,
         QtCore.QPointF(length-hw,-hh/2),
         QtCore.QPointF(length-hw, hh/2)
     )
-    fontsz = getDefaultFontSize()
-    font = getDefaultFont()
     painter.setFont(font)
     text = QtGui.QStaticText()
     text.setText(title)
@@ -294,7 +303,8 @@ def ArrowPrimitive(x0, y0, x1, y1, headWidth, headHeight,
     painter.drawStaticText(QtCore.QPointF(0, 0), text)
 
 def CircularArrowPrimitive(radius, rdir, headWidth, headHeight, 
-                           highlighted, lineWidth, title, painter):
+                           highlighted, lineWidth, title, font,
+                           painter):
     r = QtCore.QRectF(-radius, -radius, 
                 2*radius, 2*radius)
     hw = headWidth
@@ -321,8 +331,6 @@ def CircularArrowPrimitive(radius, rdir, headWidth, headHeight,
         QtCore.QPointF(0.0-hw, hh/2)
     )
     painter.restore()
-    fontsz = getDefaultFontSize()
-    font = getDefaultFont()
     painter.setFont(font)
     text = QtGui.QStaticText()
     text.setText(title)
@@ -348,7 +356,8 @@ class Arrow(PairPointItem):
     def paint(self, painter, option, widget):
         ArrowPrimitive(self.x0, self.y0, self.x1, self.y1, 
             self.headWidth, self.headHeight, self.highlighted, 
-            self.lineWidth, self.title, painter)
+            self.lineWidth, self.title, getDefaultFont(), 
+            painter)
 
 class CircularArrow(SceneObjectItem):
     def __init__(self, x, y, angle, ccw, title):
@@ -366,13 +375,22 @@ class CircularArrow(SceneObjectItem):
 
     def paint(self, painter, option, widget):
         CircularArrowPrimitive(self.radius, self.rdir, self.headWidth, self.headHeight, 
-                               self.highlighted, self.lineWidth, self.title, painter)
+                               self.highlighted, self.lineWidth, self.title, 
+                               getDefaultFont(), painter)
 
 class RefFrame(SceneObjectItem):
     def __init__(self, obj, tm, rm, ta, rd, titles):
-        b = obj.boundingRect()
-        y = b.height() + getDefaultRefFrameMargin()
-        super(RefFrame, self).__init__(obj.x(), obj.y() - y, 0, 0, 0)
+
+        # Position the reference frame
+        if obj.rfox == None or obj.rfoy == None:
+            b = obj.boundingRect()
+            x = 0
+            y = -b.height()/2 - getDefaultRefFrameMargin()
+        else:
+            x = obj.rfox
+            y = obj.rfoy
+
+        super(RefFrame, self).__init__(obj.x() + x, obj.y() + y, 0, 0, 0)
         
         self.lineWidth = getDefaultRefFrameTickness()
         self.headWidth = getDefaultRefFrameHeadWidth()
@@ -390,12 +408,32 @@ class RefFrame(SceneObjectItem):
             self.tx = texToRTF(titles[0])
         if tm >= 2:
             self.ty = texToRTF(titles[1])
-        if ta >= 1:
+        if rm >= 1:
             self.ta = texToRTF(titles[2])
 
     def boundingRect(self):
-        return QtCore.QRectF(self.x(), 
-            self.y(), self.rsize, self.rsize)
+        if self.tx != None and self.ty != None and self.ta != None:
+            r = self.rsize * math.sqrt(2)
+            return QtCore.QRectF(-r/2, -r/2, r, r)
+        elif self.tx != None and self.ty != None:
+            x = self.rsize * math.cos(self.tang)
+            y = self.rsize * math.sin(self.tang)
+            return QtCore.QRectF(min(0,x), min(0,y), max(0,x), max(0,y))
+        elif self.tx != None and self.ta != None:
+            d = self.rsize * math.sin(self.tang)
+            x = max(self.rsize * math.cos(self.tang), self.radius)
+            return QtCore.QRectF(-x/2, 0, x, d + self.radius)
+        elif self.tx != None:
+            r = self.rsize/2
+            x = max(r * math.cos(self.tang), self.headHeight, self.headWidth)
+            y = max(r * math.sin(self.tang), self.headHeight, self.headWidth)
+            return QtCore.QRectF(-x/2, -y/2, x, y)
+        elif self.ta != None:
+            r = self.radius
+            return QtCore.QRectF(-r, -r, 2*r, 2*r)
+        else:
+            return QtCore.QRectF(-self.rsize, 
+                -self.rsize, 2*self.rsize, 2*self.rsize)
 
     def paint(self, painter, option, widget):
         if self.tx != None and self.ty != None and self.ta != None:
@@ -403,31 +441,42 @@ class RefFrame(SceneObjectItem):
             painter.rotate(self.tang * 180.0 / math.pi)
             painter.translate(-self.rsize/2, self.rsize/2)
             painter.save()
-            ArrowPrimitive(0, 0, self.rsize, 0, self.headWidth, self.headHeight, self.highlighted, self.lineWidth, self.tx, painter)
+            ArrowPrimitive(0, 0, self.rsize, 0, self.headWidth, self.headHeight, self.highlighted, 
+                           self.lineWidth, self.tx, getDefaultRefFrameFont(), painter)
             painter.restore()
-            ArrowPrimitive(0, 0, 0, -self.rsize, self.headWidth, self.headHeight, self.highlighted, self.lineWidth, self.ty, painter)
+            ArrowPrimitive(0, 0, 0, -self.rsize, self.headWidth, self.headHeight, self.highlighted, 
+                           self.lineWidth, self.ty, getDefaultRefFrameFont(), painter)
             painter.restore()
-            CircularArrowPrimitive(self.radius, self.rdir, self.headWidth, self.headHeight, self.highlighted, self.lineWidth, self.ta, painter)
+            CircularArrowPrimitive(self.radius, self.rdir, self.headWidth, self.headHeight, self.highlighted, 
+                                   self.lineWidth, self.ta, getDefaultRefFrameFont(), painter)
         elif self.tx != None and self.ty != None:
             painter.rotate(self.tang * 180.0 / math.pi)
             painter.save()
-            ArrowPrimitive(0, 0, self.rsize, 0, self.headWidth, self.headHeight, self.highlighted, self.lineWidth, self.tx, painter)
+            ArrowPrimitive(0, 0, self.rsize, 0, self.headWidth, self.headHeight, self.highlighted, 
+                           self.lineWidth, self.tx, getDefaultRefFrameFont(), painter)
             painter.restore()
-            ArrowPrimitive(0, 0, 0, -self.rsize, self.headWidth, self.headHeight, self.highlighted, self.lineWidth, self.ty, painter)
+            ArrowPrimitive(0, 0, 0, -self.rsize, self.headWidth, self.headHeight, self.highlighted, 
+                           self.lineWidth, self.ty, getDefaultRefFrameFont(), painter)
         elif self.tx != None and self.ta != None:
             d = self.rsize * math.sin(self.tang)
             painter.save()
-            painter.translate(0, self.rsize/2 - d/2)
+            painter.translate(0, -d/2)
             painter.rotate(self.tang * 180.0 / math.pi)
             painter.translate(-self.rsize/2, 0)
-            ArrowPrimitive(0, 0, self.rsize, 0, self.headWidth, self.headHeight, self.highlighted, self.lineWidth, self.tx, painter)
+            ArrowPrimitive(0, 0, self.rsize, 0, self.headWidth, self.headHeight, self.highlighted, 
+                           self.lineWidth, self.tx, getDefaultRefFrameFont(), painter)
             painter.restore()
-            painter.translate(0, -d)
-            CircularArrowPrimitive(self.radius, self.rdir, self.headWidth, self.headHeight, self.highlighted, self.lineWidth, self.ta, painter)
+            painter.translate(0, -d-self.rsize/2)
+            CircularArrowPrimitive(self.radius, self.rdir, self.headWidth, self.headHeight, self.highlighted, 
+                                   self.lineWidth, self.ta, getDefaultRefFrameFont(), painter)
         elif self.tx != None:
             painter.rotate(self.tang * 180.0 / math.pi)
             painter.translate(-self.rsize/2, 0)
-            ArrowPrimitive(0, 0, self.rsize, 0, self.headWidth, self.headHeight, self.highlighted, self.lineWidth, self.tx, painter)
+            ArrowPrimitive(0, 0, self.rsize, 0, self.headWidth, self.headHeight, self.highlighted, 
+                           self.lineWidth, self.tx, getDefaultRefFrameFont(), painter)
+        elif self.ta != None:
+            CircularArrowPrimitive(self.radius, self.rdir, self.headWidth, self.headHeight, self.highlighted, 
+                                   self.lineWidth, self.ta, getDefaultRefFrameFont(), painter)
 
 class Rod(PairPointItem):
     def __init__(self, x0, y0, x1, y1, title, showTraction = True):

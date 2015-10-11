@@ -55,6 +55,7 @@ class MainWindow(QtGui.QWidget):
         drawv.setRenderHint(QtGui.QPainter.Antialiasing)
         drawv.setRenderHint(QtGui.QPainter.HighQualityAntialiasing)
         drawv.setRenderHint(QtGui.QPainter.SmoothPixmapTransform)
+        drawv.setViewportUpdateMode(QtGui.QGraphicsView.FullViewportUpdate)
         self.bpp = QtGui.QPushButton('<<')
         self.bpp.clicked.connect(self.tmPPrevious)
         self.bp = QtGui.QPushButton('<')
@@ -96,7 +97,7 @@ class MainWindow(QtGui.QWidget):
         pass
         #obj = Shapes.Box(100, 50, 200, 100, 0, '', 0, 0)
         #self.scene.addItem(obj)
-        #self.scene.addItem(Shapes.RefFrame(obj, 2, 1, math.pi/2, -1, ('u','v','a')))
+        #self.scene.addItem(Shapes.RefFrame(obj, 1, 1, math.pi/2, -1, ('u','v','a')))
         #self.scene.addItem(Shapes.CircularArrow(0, 0, 0, True, 'a'))
         #expr = Expressions.ExpressionItem(0, 0)
         #self.scene.addItem(expr)
@@ -210,14 +211,18 @@ class MainWindow(QtGui.QWidget):
         t = shape['type']
         offx = shape.get('offx', 0)
         offy = shape.get('offy', 0)
+        rfox = shape.get('rfox', None)
+        rfoy = shape.get('rfoy', None)
         a = shape.get('angle', 0)
         if t == 'box':
             w = shape['width']
             h = shape['height']
-            o = Shapes.Box(pos[0], pos[1], w, h, a, alias, offx, offy)
+            o = Shapes.Box(pos[0], pos[1], w, h, a, 
+                    alias, offx, offy, rfox, rfoy)
         elif t == 'ball':
             w = h = shape['radius'] * 2
-            o = Shapes.Ball(pos[0], pos[1], w, h, a, alias, offx, offy)
+            o = Shapes.Ball(pos[0], pos[1], w, h, a, 
+                    alias, offx, offy, rfox, rfoy)
         elif t == 'wall':
             w = shape['width']
             h = shape['height']
