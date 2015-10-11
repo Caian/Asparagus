@@ -33,12 +33,6 @@ class ExpressionItem(Shapes.SceneItem):
         self.setX(x)
         self.setY(y)
         self.tree = []
-        self.tree.append(DerivativeElement('ttt',[ParenthesisElement(DivisionElement(ParenthesisElement(SymbolElement("TxbaconcymcebolaT")),
-            ParenthesisElement(DivisionElement(
-            SymbolElement("d<sup>2</sup>"), 
-            SymbolElement("dt<sup>2</sup>"))))), SymbolElement('foo'), SymbolElement('bar'), DivisionElement(
-            SymbolElement("d<sup>2</sup>"), 
-            SymbolElement("dt<sup>2</sup>"))]))
 
     def boundingRect(self):
         return QtCore.QRectF(0, 0, 0, 0)
