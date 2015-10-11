@@ -178,9 +178,26 @@ class MainWindow(QtGui.QWidget):
             elif ti[0] == 'ref':
                 if ti[1] != None:
                     ti[1].highlighted = False
-                # remove refs somehow
 
-        # Do current step
+        # Roll back reference frames ahead of tmi
+        l = []
+        for i,r in self.refscene.items():
+            if i >= self.tmi:
+                self.scene.removeItem(r)
+                l.append(i)
+            else:
+                r.highlighted = False
+        for i in l:
+            self.refscene.pop(i)
+
+        # Add reference frames before tmi
+        for i in range(last+1, self.tmi):
+            ti = self.timemachine[i]
+            if ti[0] == 'ref':
+                ref = Shapes.RefFrame(ti[1], ti[2], ti[3], ti[4], ti[5], ti[6])
+                self.scene.addItem(ref)
+                self.refscene[i] = ref
+
         if self.tmi >= 0:
             ti = self.timemachine[self.tmi]
             if ti[0] == 'hl3':
@@ -192,8 +209,7 @@ class MainWindow(QtGui.QWidget):
             elif ti[0] == 'ref':
                 if ti[1] != None:
                     ti[1].highlighted = True
-                # add refs somehow
-                # nt, nr, at, dr
+                # add refs 
                 ref = Shapes.RefFrame(ti[1], ti[2], ti[3], ti[4], ti[5], ti[6])
                 ref.highlighted = True
                 self.scene.addItem(ref)
