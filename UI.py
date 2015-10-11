@@ -27,7 +27,8 @@ def init():
     global app
     app = QtGui.QApplication(sys.argv)
     printer = MainWindow()
-    return printer
+    tm = printer
+    return printer, tm
 
 def run():
     global app
@@ -43,7 +44,9 @@ class MainWindow(QtGui.QWidget):
         super(MainWindow, self).__init__()
         self.initUI()
         self.dynscene = { }
-    
+        self.timemachine = []
+        self.tmi = -1
+
     def initUI(self):
         self.scene = QtGui.QGraphicsScene(self)
         drawv = CartesianView(self)
@@ -51,16 +54,39 @@ class MainWindow(QtGui.QWidget):
         drawv.setRenderHint(QtGui.QPainter.Antialiasing)
         drawv.setRenderHint(QtGui.QPainter.HighQualityAntialiasing)
         drawv.setRenderHint(QtGui.QPainter.SmoothPixmapTransform)
+        self.bpp = QtGui.QPushButton('<<')
+        self.bpp.clicked.connect(self.tmPPrevious)
+        self.bp = QtGui.QPushButton('<')
+        self.bp.clicked.connect(self.tmPrevious)
+        self.li = QtGui.QLabel('0/0')
+        self.li.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+        self.bn = QtGui.QPushButton('>')
+        self.bn.clicked.connect(self.tmNext)
+        self.bnn = QtGui.QPushButton('>>')
+        self.bnn.clicked.connect(self.tmNNext)
+        hbox0 = QtGui.QHBoxLayout(self)
+        hbox0.addWidget(self.bpp)
+        hbox0.addWidget(self.bp)
+        hbox0.addWidget(self.li)
+        hbox0.addWidget(self.bn)
+        hbox0.addWidget(self.bnn)
+        panel = QtGui.QFrame(self)
+        panel.setLayout(hbox0)
+        hbox1 = QtGui.QVBoxLayout(self)
+        hbox1.addWidget(drawv)
+        hbox1.addWidget(panel)
+        frame = QtGui.QFrame(self)
+        frame.setLayout(hbox1)
         self.addDefaultElements()
         self.console = QtGui.QListWidget(self)
         split = QtGui.QSplitter(self)
         split.setOrientation(QtCore.Qt.Vertical)
-        split.addWidget(drawv)
+        split.addWidget(frame)
         split.addWidget(self.console)
         split.setSizes([720 - 720//4, 720//4])
-        hbox = QtGui.QHBoxLayout(self)
-        hbox.addWidget(split)
-        self.setLayout(hbox)
+        hbox2 = QtGui.QVBoxLayout(self)
+        hbox2.addWidget(split)
+        self.setLayout(hbox2)
         self.setGeometry(300, 150, 1280, 720)
         self.setWindowTitle('Asparagus')
         self.show()
@@ -69,6 +95,102 @@ class MainWindow(QtGui.QWidget):
         pass
         #expr = Expressions.ExpressionItem(0, 0)
         #self.scene.addItem(expr)
+
+    ###############################
+    # TimeMachine controls
+    ###############################
+
+    def tmPPrevious(self):
+        last = self.tmi
+        self.tmi = 0
+        self.tmUpdate()
+        self.tmDraw(last)
+
+    def tmPrevious(self):
+        last = self.tmi
+        self.tmi -= 1
+        self.tmUpdate()
+        self.tmDraw(last)
+
+    def tmNext(self):
+        last = self.tmi
+        self.tmi += 1
+        self.tmUpdate()
+        self.tmDraw(last)
+
+    def tmNNext(self):
+        last = self.tmi
+        self.tmi = len(self.timemachine) - 1
+        self.tmUpdate()
+        self.tmDraw(last)
+
+    def tmUpdate(self):
+        l = len(self.timemachine)
+        self.li.setText('%d/%d' % (self.tmi+1, l))
+        self.bp.setEnabled(self.tmi > 0)
+        self.bpp.setEnabled(self.tmi > 0)
+        self.bn.setEnabled(self.tmi < l-1)
+        self.bnn.setEnabled(self.tmi < l-1)
+
+    ###############################
+    # TimeMachine interface
+    ###############################
+
+    def clear_tm(self):
+        self.timemachine = []
+        self.tmUpdate()
+
+    def add_highlight_eqn(self, obj, dyn, eqns):
+        if len(eqns) == 0:
+            return
+        obj = self.dynscene[obj['$.name']] if obj != None else None
+        dyn = self.dynscene[dyn.name] if dyn != None else None
+        eqns = [str(s) for s in eqns]
+        self.timemachine.append(('hl3', obj, dyn, eqns))
+        self.tmUpdate()
+
+    def add_rf(self, obj, nt, nr, at, dr):
+        obj = self.dynscene[obj['$.name']]
+        self.timemachine.append(('ref', obj, nt, nr, at, dr))
+        self.tmUpdate()
+
+    ###############################
+    # TimeMachine rendering
+    ###############################
+
+    def tmDraw(self, last):
+        
+        # Undo last step
+        if last >= 0:
+            ti = self.timemachine[last]
+            if ti[0] == 'hl3':
+                if ti[1] != None:
+                    ti[1].highlighted = False
+                if ti[2] != None:
+                    ti[2].highlighted = False
+                # remove eqns somehow
+            elif ti[0] == 'ref':
+                if ti[1] != None:
+                    ti[1].highlighted = False
+                # remove refs somehow
+
+        # Do current step
+        if self.tmi >= 0:
+            ti = self.timemachine[self.tmi]
+            if ti[0] == 'hl3':
+                if ti[1] != None:
+                    ti[1].highlighted = True
+                if ti[2] != None:
+                    ti[2].highlighted = True
+                # add eqns somehow
+            elif ti[0] == 'ref':
+                if ti[1] != None:
+                    ti[1].highlighted = True
+                # add refs somehow
+
+        # Re-render the entire scene to avoid bugs with
+        # partially updated areas
+        self.scene.update()
 
     ###############################
     # printer interface

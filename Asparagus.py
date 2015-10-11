@@ -33,9 +33,9 @@ def main():
         else:
             fn = arg
 
-    printer = UI.init()
+    printer, tm = UI.init()
     loader = AsparagramLoader(sys.argv[1])
-    engine = T3Engine(printer, args)
+    engine = T3Engine(printer, tm, args)
     engine.load(loader)
     sys.exit(UI.run())
 

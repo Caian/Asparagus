@@ -39,16 +39,24 @@ class AliasPrinter(StrPrinter):
         s = self.aliases.get(expr, str(expr.func))
         return self.aliases.get(s, s) + '(' + ', '.join([str(a) for a in expr.args]) + ')'
 
+    def _print_Derivative(self, expr):
+        s = str(expr.args[0]) + "'"
+        for a in expr.args[2:]:
+            if a != expr.args[1]:
+                return super()._print_Derivative(expr)
+            s += "'"
+        return s
+
 # Choo-Choooo
 
 class T3Engine():
-    def __init__(self, printing_iface, args):
+    def __init__(self, printing_iface, tm_iface, args):
         self.args = args
         self.printer = printing_iface
         self.scene = None
         self.aliases = { }
         self.symbols = None
-        self.timemachine = None
+        self.timemachine = tm_iface
         a = self.aliases
         sympy.Basic.__str__ = lambda self: AliasPrinter(a).doprint(self)
 
@@ -397,7 +405,7 @@ class T3Engine():
 
     def load(self, scene_loader):
         # Initialize the time machine 
-        self.timemachine = []
+        self.timemachine.clear_tm()
 
         # Initialize the aliases
         self.printer.print_diagnostic(3, 'initializing alias table for symbols...')
@@ -593,7 +601,7 @@ class T3Engine():
             self.scene['refs'][obj['$.name']] = (tmode, rmode, angle, dir)
 
             # Send the ref frame to timemachine
-            self.timemachine_highlight_rf(obj, tmode, rmode, angle, dir)
+            self.timemachine.add_rf(obj, tmode, rmode, angle, dir)
 
     def solveEquations(self):
         # System of equations
@@ -633,7 +641,7 @@ class T3Engine():
 
                         # Send expression to timemachine
                         if obj['tr.mass'] != 0 and not cx and not cy:
-                            self.timemachine_highlight_eqn(obj, dyn, [sympy.Eq(mxa, rhsx)])
+                            self.timemachine.add_highlight_eqn(obj, dyn, [sympy.Eq(mxa, rhsx)])
 
                     elif rftmode == 2:
                         if not cx:
@@ -642,7 +650,7 @@ class T3Engine():
 
                             # Send expression to timemachine
                             if obj['tr.mass'] != 0 and not cx:
-                                self.timemachine_highlight_eqn(obj, dyn, [sympy.Eq(mxa, rhsx)])
+                                self.timemachine.add_highlight_eqn(obj, dyn, [sympy.Eq(mxa, rhsx)])
 
                         if not cy:
                             y = sympy.simplify(force*sympy.cos(i[1]))
@@ -650,7 +658,7 @@ class T3Engine():
 
                             # Send expression to timemachine
                             if obj['tr.mass'] != 0 and not cy:
-                                self.timemachine_highlight_eqn(obj, dyn, [sympy.Eq(mya, rhsy)])
+                                self.timemachine.add_highlight_eqn(obj, dyn, [sympy.Eq(mya, rhsy)])
 
                     if rfrmode != 0 and not ca:
                         # Compute the torque components
@@ -670,7 +678,7 @@ class T3Engine():
 
                             # Send expression to timemachine
                             if obj['rt.mass'] != 0 and not ca:
-                                self.timemachine_highlight_eqn(obj, dyn, [sympy.Eq(mta, rhst)])
+                                self.timemachine.add_highlight_eqn(obj, dyn, [sympy.Eq(mta, rhst)])
 
                 elif not ca:
                     # The force is actually a torque...
@@ -682,7 +690,7 @@ class T3Engine():
 
                     # Send expression to timemachine
                     if obj['rt.mass'] != 0 and not ca:
-                        self.timemachine_highlight_eqn(obj, dyn, [sympy.Eq(mta, rhst)])
+                        self.timemachine.add_highlight_eqn(obj, dyn, [sympy.Eq(mta, rhst)])
 
             # Prepare to show the final set of equations
             tmexprs = []
@@ -728,7 +736,7 @@ class T3Engine():
                         raise Exception('unknown reference frame mode')
 
             # Send expressions to timemachine
-            self.timemachine_highlight_eqn(obj, None, tmexprs)
+            self.timemachine.add_highlight_eqn(obj, None, tmexprs)
 
         # Finish with the link equations
         for di, dyn in enumerate(self.scene['dynamics']):
@@ -750,22 +758,9 @@ class T3Engine():
                     tmexprs.append(le)
 
             # Send the system of link equations to timemachine
-            self.timemachine_highlight_eqn(None, None, tmexprs)
+            self.timemachine.add_highlight_eqn(None, dyn, tmexprs)
         
         # Send the whole system to timemachine
-        self.timemachine_highlight_eqn(None, None, self.scene['equations'])
+        self.timemachine.add_highlight_eqn(None, None, self.scene['equations'])
 
         self.printer.print_diagnostic(3, 'system ready.')
-
-    def timemachine_highlight_eqn(self, obj, dyn, eqns):
-        if len(eqns) == 0:
-            return
-        self.timemachine.append(';'.join([
-                'eqn', 
-                obj['$.name'] if obj != None else '', 
-                dyn.name if dyn != None else ''
-            ] + [str(s) for s in eqns]))
-
-    def timemachine_highlight_rf(self, obj, nt, nr, at, dr):
-        self.timemachine.append('ref;%s;%d;%d;%d;%d' % 
-            (obj['$.name'], nt, nr, at, dr))
