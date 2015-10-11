@@ -44,6 +44,7 @@ class MainWindow(QtGui.QWidget):
         super(MainWindow, self).__init__()
         self.initUI()
         self.dynscene = { }
+        self.refscene = { }
         self.timemachine = []
         self.tmi = -1
 
@@ -93,6 +94,10 @@ class MainWindow(QtGui.QWidget):
 
     def addDefaultElements(self):
         pass
+        #obj = Shapes.Box(100, 50, 200, 100, 0, '', 0, 0)
+        #self.scene.addItem(obj)
+        #self.scene.addItem(Shapes.RefFrame(obj, 2, 1, math.pi/2, -1, ('u','v','a')))
+        #self.scene.addItem(Shapes.CircularArrow(0, 0, 0, True, 'a'))
         #expr = Expressions.ExpressionItem(0, 0)
         #self.scene.addItem(expr)
 
@@ -149,9 +154,9 @@ class MainWindow(QtGui.QWidget):
         self.timemachine.append(('hl3', obj, dyn, eqns))
         self.tmUpdate()
 
-    def add_rf(self, obj, nt, nr, at, dr):
+    def add_rf(self, obj, nt, nr, at, dr, titles):
         obj = self.dynscene[obj['$.name']]
-        self.timemachine.append(('ref', obj, nt, nr, at, dr))
+        self.timemachine.append(('ref', obj, nt, nr, at, dr, titles))
         self.tmUpdate()
 
     ###############################
@@ -187,6 +192,11 @@ class MainWindow(QtGui.QWidget):
                 if ti[1] != None:
                     ti[1].highlighted = True
                 # add refs somehow
+                # nt, nr, at, dr
+                ref = Shapes.RefFrame(ti[1], ti[2], ti[3], ti[4], ti[5], ti[6])
+                ref.highlighted = True
+                self.scene.addItem(ref)
+                self.refscene[self.tmi] = ref
 
         # Re-render the entire scene to avoid bugs with
         # partially updated areas

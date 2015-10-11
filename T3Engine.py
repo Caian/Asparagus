@@ -601,7 +601,8 @@ class T3Engine():
             self.scene['refs'][obj['$.name']] = (tmode, rmode, angle, dir)
 
             # Send the ref frame to timemachine
-            self.timemachine.add_rf(obj, tmode, rmode, angle, dir)
+            self.timemachine.add_rf(obj, tmode, rmode, angle, dir, 
+                (str(obj['tr.x']), str(obj['tr.y']), str(obj['rt.angle'])))
 
     def solveEquations(self):
         # System of equations
