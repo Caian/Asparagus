@@ -262,7 +262,7 @@ class SpringDynamic(ActiveDynamic):
     def getTSym(self):
         return self.k * self.getDSym()
     
-# Spring Dynamic, where the traction force is a 
+# Dampener Dynamic, where the traction force is a 
 # function of the velocity of the bodies
 class DampenerDynamic(ActiveDynamic):
     def __init__(self, name, atta, rolla, attb, rollb, symbols):
@@ -365,3 +365,42 @@ class BeltDynamic(PairDynamic):
     def simplify1DL(self, linkeqns):
         return linkeqns
     
+# Base class for angular dynamics where the torque
+# may be a function of the position of the bodies
+class ActiveAngularDynamic(Dynamic):
+    def __init__(self, name, obj, symbols):
+        ActiveAngularDynamic.__init__(self, name, symbols)
+        self.obj = obj
+
+    def getDSym(self):
+        return self.obj['rt.angle']
+
+    def getDExpr(self, obj):
+        if obj != self.obj:
+            raise Exception('invalid object')
+
+        # Return a pure torque
+        return (self.getTSym(), None, '')
+
+    def getLEqns(self):
+        return [ ]
+
+# Angular Spring Dynamic, where the torque is a 
+# function of the angular position of the body
+class AngularSpringDynamic(ActiveAngularDynamic):
+    def __init__(self, name, obj, symbols):
+        AngularSpringDynamic.__init__(self, name, obj, symbols)
+        self.k = self.symbols.getSymbol(self.name, 'k', nonnegative=True)
+        
+    def getTSym(self):
+        return -self.k * self.getDSym()
+    
+# Anglar Dampener Dynamic, where the traction force is a 
+# function of the velocity of the bodies
+class AngularDampenerDynamic(ActiveAngularDynamic):
+    def __init__(self, name, obj, symbols):
+        AngularDampenerDynamic.__init__(self, name, obj, symbols)
+        self.b = self.symbols.getSymbol(self.name, 'b', nonnegative=True)
+        
+    def getTSym(self):
+        return -self.b * self.getDSym().diff(Globals.time(self.symbols))
