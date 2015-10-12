@@ -27,6 +27,9 @@ def getDefaultExpressionPen():
     pen.setWidthF(1.0)
     return pen
 
+def getDefaultExpressionListMargin():
+    return 20
+
 class ExpressionItem(Shapes.SceneItem):
     def __init__(self, x, y):
         super(ExpressionItem, self).__init__()
@@ -49,9 +52,54 @@ class ExpressionItem(Shapes.SceneItem):
         for i in self.tree:
             i.paint(painter, font, 0, 0);
 
+class ExpressionList(Shapes.SceneItem):
+    def __init__(self, x, y, eqns):
+        super(ExpressionList, self).__init__()
+        self.setX(x)
+        self.setY(y)
+        self.tree = list(eqns)
+        self.bg = Shapes.getDefaultBackBrush()
+        self.fr = Shapes.getDefaultHighlightColor()
+
+    def boundingRect(self):
+        h = 0
+        w = 0
+        m = getDefaultExpressionListMargin()
+        font = Shapes.getDefaultFont()
+        for eqn in self.tree:
+            b = eqn.boundingRect(font)
+            h += b.height()
+            w = max(w, b.width())
+        return QtCore.QRectF(0, 0, w+m, h+m)
+
+    def paint(self, painter, option, widget):
+        pen = getDefaultExpressionPen()
+        rpen = Shapes.getDefaultPen(True)
+        font = Shapes.getDefaultFont()
+        brush = Shapes.getDefaultForeBrush()
+        m = getDefaultExpressionListMargin()
+        b = self.boundingRect().adjusted(0, 0, m, m)
+        pen.setWidthF(2.0)
+        painter.scale(1, -1)
+        painter.setPen(rpen)
+        painter.setFont(font)
+        painter.setBrush(self.bg)
+        painter.drawRect(b)
+        painter.setPen(pen)
+        painter.setBrush(brush)
+        h = m/2
+        for i in self.tree:
+            b = i.boundingRect(font)
+            i.paint(painter, font, -b.left() + m/2, h + b.height()/2);
+            h += b.height()
+
 class SymbolElement():
     def __init__(self, symbol):
         self.text = QtGui.QStaticText()
+        self.text.setTextWidth(-1)
+        opt = self.text.textOption()
+        opt.setWrapMode(QtGui.QTextOption.NoWrap)
+        self.text.setTextOption(opt)
         self.text.setText(Shapes.texToRTF(symbol))
 
     def boundingRect(self, font):

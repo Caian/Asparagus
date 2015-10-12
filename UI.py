@@ -43,6 +43,7 @@ class MainWindow(QtGui.QWidget):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.initUI()
+        self.curreqns = []
         self.dynscene = { }
         self.refscene = { }
         self.timemachine = []
@@ -170,11 +171,15 @@ class MainWindow(QtGui.QWidget):
         if last >= 0:
             ti = self.timemachine[last]
             if ti[0] == 'hl3':
+                # Remove the highlights
                 if ti[1] != None:
                     ti[1].highlighted = False
                 if ti[2] != None:
                     ti[2].highlighted = False
-                # remove eqns somehow
+                # Remove previous eqn box
+                if self.curreqns != None:
+                    self.scene.removeItem(self.curreqns)
+                self.curreqns = None
             elif ti[0] == 'ref':
                 if ti[1] != None:
                     ti[1].highlighted = False
@@ -201,15 +206,45 @@ class MainWindow(QtGui.QWidget):
         if self.tmi >= 0:
             ti = self.timemachine[self.tmi]
             if ti[0] == 'hl3':
+                b = None
+                # Highlight objects and compute a good place to put the eqn box
                 if ti[1] != None:
                     ti[1].highlighted = True
+                    b = ti[1].boundingRect().translated(ti[1].x(), ti[1].y())
                 if ti[2] != None:
                     ti[2].highlighted = True
-                # add eqns somehow
+                    if b == None:
+                        b = ti[2].boundingRect().translated(ti[2].x(), ti[2].y())
+                    else:
+                        b = b.united(ti[2].boundingRect().translated(ti[2].x(), ti[2].y()))
+                # Add eqn box
+                eqns = [Expressions.SymbolElement(e) for e in ti[3]]
+                self.curreqns = Expressions.ExpressionList(0, 0, eqns)
+                if b != None:
+                    c = self.curreqns.boundingRect()
+                    x = b.right() + 10
+                    y = b.center().y() + c.height()/2
+                else:
+                    b = None
+                    for n, i in self.dynscene.items():
+                        if b == None:
+                            c = i.boundingRect()
+                            b = c.translated(i.x(), i.y())
+                        else:
+                            c = i.boundingRect()
+                            c.translate(i.x(), i.y())
+                            b = b.united(c)
+                    r = b.center()
+                    c = self.curreqns.boundingRect()
+                    x = r.x() - c.width()/2
+                    y = r.y() + c.height()/2
+                self.curreqns.setX(x)
+                self.curreqns.setY(y)
+                self.scene.addItem(self.curreqns)
             elif ti[0] == 'ref':
                 if ti[1] != None:
                     ti[1].highlighted = True
-                # add refs 
+                # Add Ref Frames
                 ref = Shapes.RefFrame(ti[1], ti[2], ti[3], ti[4], ti[5], ti[6])
                 ref.highlighted = True
                 self.scene.addItem(ref)
