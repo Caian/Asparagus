@@ -795,3 +795,43 @@ class AngularSpring(SceneItem):
         painter.translate(self.radius, 0)
         painter.scale(1, -1)
         painter.drawStaticText(QtCore.QPointF(0, 0), text)
+
+
+class AngularDampener(SceneItem):
+    def __init__(self, x, y, radius, title):
+        super(AngularDampener, self).__init__()
+        self.setX(x)
+        self.setY(y)
+        self.lineWidth = getDefaultTickness()
+        self.radius = radius
+        self.title = texToRTF(title)
+
+    def boundingRect(self):
+        r = self.radius
+        return QtCore.QRectF(-r, -r, 2*r, 2*r)
+
+    def paint(self, painter, option, widget):
+
+        # Draw the outer circle
+        pen = getDefaultPen(self.highlighted)
+        pen.setWidthF(self.lineWidth)
+        painter.setPen(pen)
+        painter.drawEllipse(self.boundingRect())
+
+        # Draw the inner circle
+        r = self.radius - 2.5 * self.lineWidth
+        pen.setWidthF(2 * self.lineWidth)
+        painter.setPen(pen)
+        painter.drawEllipse(-r, -r, 2*r, 2*r)
+
+        # Draw the text
+        fontsz = getDefaultFontSize()
+        font = getDefaultFont()
+        painter.setFont(font)
+        text = QtGui.QStaticText()
+        text.setText(self.title)
+        text.prepare(QtGui.QTransform(), font)
+        sz = text.size()
+        painter.translate(self.radius, 0)
+        painter.scale(1, -1)
+        painter.drawStaticText(QtCore.QPointF(0, 0), text)
