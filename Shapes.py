@@ -141,6 +141,12 @@ def getDefaultFontSize():
 def getDefaultRefFrameFontSize():
     return 16
 
+def getDefaultASpringTurns():
+    return 3
+
+def getDefaultASpringDelta():
+    return math.pi / 5
+
 def getDefaultFont():
     font = QtGui.QFont()
     font.setFamily(getDefaultFontFamily())
@@ -731,3 +737,61 @@ class ThetaPairDisplay(SceneItem):
             painter.scale(1, -1)
             painter.drawStaticText(QtCore.QPointF(-(r+rd)*math.cos(hangle2)-sz.width()/2, 
                 -(r+rd)*math.sin(hangle2)-sz.height()/2), text)
+
+class AngularSpring(SceneItem):
+    def __init__(self, x, y, radius, title):
+        super(AngularSpring, self).__init__()
+        self.setX(x)
+        self.setY(y)
+        self.lineWidth = getDefaultTickness()
+        self.radius = radius
+        self.nturns = getDefaultASpringTurns()
+        self.title = texToRTF(title)
+
+    def boundingRect(self):
+        r = self.radius
+        return QtCore.QRectF(-r, -r, 2*r, 2*r)
+
+    def paint(self, painter, option, widget):
+
+        # Calculate the radius variation per point
+        da = getDefaultASpringDelta()
+        alen = self.nturns*2*math.pi
+        npoints = int(alen // da)
+        r = self.radius
+        dr = r / npoints
+
+        # Draw the spring aproximating by Bezier curves
+        pen = getDefaultPen(self.highlighted)
+        pen.setWidthF(self.lineWidth)
+        painter.setPen(pen)
+        path = QtGui.QPainterPath()
+        path.moveTo(0, r)
+        for i in range(1, npoints):
+            # Calculate the angle, the control point angle,
+            # the end point and control point
+            a = da * i
+            ca = da * (i - 0.5)
+            nr = r - dr*i
+            x = nr * math.sin(a)
+            y = nr * math.cos(a)
+            # 1.07 is 100% empirical
+            cx = 1.07*nr * math.sin(ca)
+            cy = 1.07*nr * math.cos(ca)
+
+            # Draw a quadratic bezier
+            path.quadTo(cx, cy, x, y)
+
+        painter.drawPath(path)
+
+        # Draw the text
+        fontsz = getDefaultFontSize()
+        font = getDefaultFont()
+        painter.setFont(font)
+        text = QtGui.QStaticText()
+        text.setText(self.title)
+        text.prepare(QtGui.QTransform(), font)
+        sz = text.size()
+        painter.translate(self.radius, 0)
+        painter.scale(1, -1)
+        painter.drawStaticText(QtCore.QPointF(0, 0), text)
