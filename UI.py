@@ -96,12 +96,6 @@ class MainWindow(QtGui.QWidget):
 
     def addDefaultElements(self):
         pass
-        #obj = Shapes.Box(100, 50, 200, 100, 0, '', 0, 0)
-        #self.scene.addItem(obj)
-        #self.scene.addItem(Shapes.RefFrame(obj, 1, 1, math.pi/2, -1, ('u','v','a')))
-        #self.scene.addItem(Shapes.CircularArrow(0, 0, 0, True, 'a'))
-        #expr = Expressions.ExpressionItem(0, 0)
-        #self.scene.addItem(expr)
 
     ###############################
     # TimeMachine controls
@@ -310,6 +304,33 @@ class MainWindow(QtGui.QWidget):
         elif dyn == 'dampener':
             assert_pos('dampener', 4)
             d = Shapes.Dampener(pos[0], pos[1], pos[2], pos[3], alias)
+        elif dyn == 'torque':
+            assert_pos('torque', 2)
+            r = float(prop.get('radius', Shapes.getDefaultCArrowRadius()))
+            c = prop.get('ccw', '0')
+            if c == '0':
+                c = False
+            else:
+                c = True
+            d = Shapes.CircularArrow(pos[0], pos[1], r, alias)
+        elif dyn == 'belt':
+            assert_pos('belt', 4)
+            c = prop.get('crossed', '0')
+            r0 = float(prop['r0'])
+            r1 = float(prop['r1'])
+            if c == '0':
+                c = False
+            else:
+                c = True
+            d = Shapes.Belt(pos[0], pos[1], r0, pos[2], pos[3], r1, c, alias)
+        elif dyn == 'angularspring':
+            assert_pos('angularspring', 2)
+            r = float(prop.get('radius', Shapes.getDefaultCArrowRadius()))
+            d = Shapes.AngularSpring(pos[0], pos[1], r, alias)
+        elif dyn == 'angulardampener':
+            assert_pos('angulardampener', 2)
+            r = float(prop.get('radius', Shapes.getDefaultCArrowRadius()))
+            d = Shapes.AngularDampener(pos[0], pos[1], r, alias)
         else:
             raise Exception('unknown dynamic type %s' % dyn)
         self.dynscene[name] = d
