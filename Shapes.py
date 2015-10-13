@@ -796,42 +796,80 @@ class AngularSpring(SceneItem):
         painter.scale(1, -1)
         painter.drawStaticText(QtCore.QPointF(0, 0), text)
 
-
-class AngularDampener(SceneItem):
-    def __init__(self, x, y, radius, title):
-        super(AngularDampener, self).__init__()
-        self.setX(x)
-        self.setY(y)
-        self.lineWidth = getDefaultTickness()
-        self.radius = radius
+class Belt(PairPointItem):
+    def __init__(self, x0, y0, r0, x1, y1, r1, crossed, title, showTraction = True):
+        super(Belt, self).__init__(x0, y0, x1, y1)
+        self.r0 = r0
+        self.r1 = r1 if not crossed else -r1
+        self.crossed = crossed
         self.title = texToRTF(title)
+        self.lineWidth = getDefaultTickness()
 
     def boundingRect(self):
-        r = self.radius
-        return QtCore.QRectF(-r, -r, 2*r, 2*r)
+        dx = self.x1 - self.x0
+        dy = self.y1 - self.y0
+        if self.x0 > self.x1:
+            x0 = -self.r1
+            xa = self.r0
+        elif self.x0 < self.x1:
+            x0 = -self.r0
+            xa = self.r1
+        else:
+            x0 = -max(self.r0, self.r1)
+            xa = min(self.r0, self.r1)
+        if self.y0 > self.y1:
+            y0 = -self.r1
+            ya = self.r0
+        elif self.x0 < self.x1:
+            y0 = -self.r0
+            ya = self.r1
+        else:
+            y0 = -max(self.r0, self.r1)
+            ya = min(self.r0, self.r1)
+        return QtCore.QRectF(x0, y0, dx+xa, dy+ya)
 
     def paint(self, painter, option, widget):
-
-        # Draw the outer circle
+        dx = self.x1 - self.x0
+        dy = self.y1 - self.y0
+        l = math.sqrt(dx**2+dy**2)
+        ar = math.atan2(dy, dx) + math.pi/2
+        t0 = 2*math.acos((self.r0 - self.r1) / l)
+        t1 = 2*math.acos((self.r1 - self.r0) / l)
+        m0 = ar + (math.pi - t0) / 2
+        m1 = ar - (math.pi - t1) / 2
+        n0 = m0 - (2*math.pi - t0)
+        n1 = m1 + (2*math.pi - t1)
+        x0 = -self.r0 * math.cos(m0)
+        y0 = -self.r0 * math.sin(m0)
+        x1 = -self.r1 * math.cos(m1)
+        y1 = -self.r1 * math.sin(m1)
+        x2 = -self.r0 * math.cos(n0)
+        y2 = -self.r0 * math.sin(n0)
+        x3 = -self.r1 * math.cos(n1)
+        y3 = -self.r1 * math.sin(n1)
+        ad = ar * 180 / math.pi
+        at0 = t0 * 180 / math.pi
+        at1 = t1 * 180 / math.pi
+        am0 = math.atan2(y0, x0) * 180 / math.pi
+        if self.crossed:
+            am1 = math.atan2(y3, x3) * 180 / math.pi
+        else:
+            am1 = math.atan2(y2, x2) * 180 / math.pi
+        r0 = QtCore.QRectF(-0.98*self.r0, 
+                           -0.98*self.r0, 
+                           2*0.98*self.r0, 
+                           2*0.98*self.r0)
+        r1 = QtCore.QRectF(-self.r1 + dx, 
+                           -0.995*self.r1 + dy, 
+                           2*0.995*self.r1, 
+                           2*0.995*self.r1)
         pen = getDefaultPen(self.highlighted)
         pen.setWidthF(self.lineWidth)
         painter.setPen(pen)
-        painter.drawEllipse(self.boundingRect())
-
-        # Draw the inner circle
-        r = self.radius - 2.5 * self.lineWidth
-        pen.setWidthF(2 * self.lineWidth)
-        painter.setPen(pen)
-        painter.drawEllipse(-r, -r, 2*r, 2*r)
-
-        # Draw the text
-        fontsz = getDefaultFontSize()
-        font = getDefaultFont()
-        painter.setFont(font)
-        text = QtGui.QStaticText()
-        text.setText(self.title)
-        text.prepare(QtGui.QTransform(), font)
-        sz = text.size()
-        painter.translate(self.radius, 0)
-        painter.scale(1, -1)
-        painter.drawStaticText(QtCore.QPointF(0, 0), text)
+        painter.drawArc(r0, -16*am0, 16*(360-at0))
+        if self.crossed:
+            painter.drawArc(r1, -16*am1, -16*(at1))
+        else:
+            painter.drawArc(r1, -16*am1, 16*(360-at1))
+        painter.drawLine(x2, y2, x3 + dx, y3 + dy)
+        painter.drawLine(x0, y0, x1 + dx, y1 + dy)
