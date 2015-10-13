@@ -280,9 +280,10 @@ class DampenerDynamic(ActiveDynamic):
 # One-body torque that does not depend on any variable 
 # of the system other than, possibly, time
 class TorqueDynamic(Dynamic):
-    def __init__(self, name, symbols, flipped):
+    def __init__(self, name, obj, flipped, symbols):
         Dynamic.__init__(self, name, symbols)
         self.flipped = flipped
+        self.obj = obj
 
     def getFSym(self):
         # Not actually nonnegative, but makes analysis easier

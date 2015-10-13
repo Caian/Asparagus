@@ -381,6 +381,65 @@ class T3Engine():
             t = aliasify('thetaa', d.thetaa)
             title = aliasify('b', d.b)
 
+        elif dyn == 'torque':
+            assert_bodies('torque', 1)
+            assert_offs('torque', 2)
+
+            flipped = int(props.get('direction', 1))
+            flipped = flipped != 0
+
+            pos = (offs['x1'], offs['y1'])
+
+            # Angular dynamics have no rolls
+            get0Rolls()
+
+            d = Dynamics.TorqueDynamic(name, obj, flipped, self.symbols)
+            
+            title = aliasify('k', d.k)
+
+        elif dyn == 'angularspring':
+            assert_bodies('angularspring', 1)
+            assert_offs('angularspring', 2)
+
+            pos = (offs['x1'], offs['y1'])
+
+            # Angular dynamics have no rolls
+            get0Rolls()
+
+            d = Dynamics.AngularSpringDynamic(name, obj, self.symbols)
+            
+            title = aliasify('k', d.k)
+
+        elif dyn == 'angulardampener':
+            assert_bodies('angulardampener', 1)
+            assert_offs('angulardampener', 2)
+
+            pos = (offs['x1'], offs['y1'])
+
+            # Angular dynamics have no rolls
+            get0Rolls()
+
+            d = Dynamics.AngularDampenerDynamic(name, obj, self.symbols)
+            
+            title = aliasify('b', d.b)
+
+        elif dyn == 'belt':
+            assert_bodies('belt', 2)
+            assert_offs('belt', 4)
+
+            pos = (offs['x1'], offs['y1'], 
+                   offs['x2'], offs['y2'])
+
+            att0 = (bodies[0], attmodes[0])
+            att1 = (bodies[1], attmodes[1])
+
+            # Angular dynamics have no rolls
+            get0Rolls()
+
+            d = Dynamics.BeltDynamic(name, att0, att1, self.symbols)
+            
+            title = aliasify('b', d.b)
+
         else:
             raise Exception('unknown dynamic type %s' % dyn)
 
