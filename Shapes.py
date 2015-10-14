@@ -51,7 +51,7 @@ def texToRTF(text):
         i += 1
         if n == '{':
             while True:
-                b = next(j)
+                b = next(i)
                 i += 1
                 if b == '}':
                     break
