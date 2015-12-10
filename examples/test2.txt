@@ -1,0 +1,45 @@
+globals
+  set gravity.theta 0
+  call time t
+  call gravity.value g
+end
+
+object wall1 at (300,0) is wall (width=0,height=-200)
+  set tr.x x0
+  set tr.y 0
+  set rt.mass 0
+  set tr.mass 0
+  set rt.angle 0
+end
+
+object wall2 at (-300,0) is wall (width=0,height=200)
+  set tr.x x1
+  set tr.y 0
+  set rt.mass 0
+  set tr.mass 0
+  set rt.angle 0
+end
+
+object ball at (0,0) is ball (radius=70)
+  call rt.mass I
+  call $.name ""
+  set tr.mass 0
+  set tr.x 0
+  set tr.y 0
+end
+
+dynamic s1 is spring (x1=300,y1=0,x2=0,y2=50)
+  connected to wall1 at rectangular (0,"-L")
+  connected to ball at polar (L,"pi")
+  call k k1
+  set rollb 1
+  set thetaa "-pi/2"
+end
+
+dynamic d1 is dampener (x1=-300,y1=-40,x2=0,y2=-40)
+  connected to wall2 at rectangular (0,R)
+  connected to ball at polar (R,0)
+  call b b1
+  set rollb 1
+  set thetaa "pi/2"
+end

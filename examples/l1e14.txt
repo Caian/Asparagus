@@ -1,0 +1,90 @@
+globals
+	set gravity.theta 0
+	call time t
+	call gravity.value g
+end
+
+object wall at (0, 0) is wall (height=100,width=0)
+	set rt.mass 0
+	set tr.mass 0
+	set rt.angle 0
+	set tr.x X1
+	set tr.y Y1
+end
+
+object box at (200, 0) is box (height=50,width=70,rfox=0,rfoy=-100)
+	set tr.y Y1
+	set rt.mass 0
+	set rt.angle 0
+	call tr.mass m
+	call tr.x x
+	call $.name m
+end
+
+object cylinder at (200, 55) is ball (radius=30,rfox=0,rfoy=100)
+	set tr.x X1
+	set tr.y Y2
+	set tr.mass 0
+	call rt.mass J_1
+	call rt.angle O
+	call $.name J_1
+end
+
+object hinge at (400, -50) is box (height=100,width=5,rfox=0,rfoy=-100)
+	set tr.x X2
+	set tr.y Y3
+	set tr.mass 0
+	call rt.mass J_2
+	call rt.angle P
+	call $.name J_2
+end
+
+object box2 at (600, -100) is box (height=50,width=50,rfox=0,rfoy=-100)
+	set tr.y Y1
+	set rt.mass 0
+	set rt.angle 0
+	call tr.mass m
+	call tr.x y
+	call $.name m_2
+end
+
+dynamic s1 is spring (x1=0,y1=0,x2=165,y2=0)
+	connected to wall at rectangular (0, 0)
+	connected to box at rectangular (0, 0)
+	set thetaa "pi/2"
+	call k k_1
+	call d d_1
+	call l l_1
+end
+
+dynamic r1 is rod (x1=200,y1=25,x2=200,y2=25)
+	connected to box at polar (R, "pi")
+	connected to cylinder at polar (r, 0)
+	set thetaa "pi/2"
+	call T T_1
+	set rollb 1
+end
+
+dynamic r2 is rod (x1=235,y1=0,x2=400,y2=0)
+	connected to box at rectangular (0, 0)
+	connected to hinge at rectangular (0, L)
+	set thetaa "pi/2"
+	call T T_2
+	set rollb 1
+end
+
+dynamic s2 is spring (x1=400,y1=-100,x2=575,y2=-100)
+	connected to hinge at rectangular (0, "-L")
+	connected to box2 at rectangular (0, 0)
+	call k k_2
+	call d d_2
+	call l l_2
+	set thetaa "pi/2"
+	set rolla 1
+end
+
+dynamic f1 is force (x1=625,y1=-100,x2=725,y2=-100)
+	connected to box2 at rectangular (0, 0)
+	call F F
+	set theta "pi/2"
+end

@@ -1,0 +1,60 @@
+globals
+  set gravity.theta 0
+  call time t
+  call gravity.value g
+end
+
+object box at (0, 0) is box (height=50,width=100,rfox=0,rfoy=100)
+	set rt.mass 0
+	set rt.angle 0
+	set tr.y 0
+	call tr.x x
+	call tr.mass m
+	call $.name m
+end
+
+object wall at (-150,0) is wall (height=100,width=0)
+	set tr.mass 0
+	set tr.x 0
+	set tr.y 0
+	set rt.mass 0
+	set rt.angle 0
+end
+
+object ball at (170,-170) is ball (radius=30,rfox=100,rfoy=0)
+	set rt.mass 0
+	set rt.angle 0
+	call tr.mass M_b
+	call tr.x u
+	call tr.y v
+	call $.name ""
+end
+
+dynamic f1 is force (x1=50,y1=0,x2=150,y2=0)
+	connected to box
+	call F F
+	set theta "pi/2"
+end
+
+dynamic d1 is dampener (x1=-150,y1=0,x2=-50,y2=0)
+	connected to box at rectangular (0,0)
+	connected to wall at rectangular (0,0)
+	call b b
+	call d d_1
+	call l l
+	set thetaa "-pi/2"
+end
+
+dynamic r1 is spring (x1=0,y1=0,x2=170,y2=-170)
+	connected to box at rectangular (0,0)
+	connected to ball at rectangular (0,0)
+	call T T
+	call l L
+	call k k
+	call d d_2
+	call thetaa O
+end
+
+dynamic w1 is weight(x1=170,y1=-170,x2=170,y2=-270)
+	connected to ball
+end

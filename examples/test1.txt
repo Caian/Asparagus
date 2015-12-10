@@ -1,0 +1,79 @@
+globals
+  set gravity.theta 0
+  call time t
+  call gravity.value g
+end
+
+object box1 at (20,-5) is box (width=100,height=100,angle=0,rfox=0,rfoy=130)
+  set tr.y Y
+  set rt.angle 0
+  call tr.mass m_1
+  call $.name m_1
+  call tr.x w
+end
+
+object box2 at (250,-5) is box (width=100,height=100,angle=0,rfox=0,rfoy=130)
+  set tr.y Y
+  set rt.mass 0
+  set rt.angle 0
+  call tr.mass m_2
+  call $.name m_2
+  call tr.x x
+end
+
+object wall at (-150,-5) is wall (width=0,height=200)
+  set tr.x Xw
+  set tr.y Y
+  set rt.mass 0
+  set tr.mass 0
+  set rt.angle 0
+end
+
+object ball at (400,-150) is ball (radius=21.21,rfox=40,rfoy=100)
+  set rt.mass 0
+  set rt.angle 0
+  call tr.mass M
+  call $.name ""
+  call tr.x u
+  call tr.y v
+end
+
+dynamic F1 is force (x1=300,y1=-5,x2=350,y2=-5)
+  connected to box2 at rectangular (0, 0)
+  set theta "pi/2"
+  call F F
+end
+
+dynamic W2 is weight (x1=400,y1=-171.21,x2=400,y2=-221.21)
+  connected to ball
+end
+
+dynamic S1 is spring (x1=-150,y1=25,x2=-30,y2=25)
+  connected to wall at rectangular (0, 0)
+  connected to box1 at rectangular (0, 0)
+  call k k_1
+  set thetaa "pi/2"
+end
+
+dynamic S2 is spring (x1=70,y1=-5,x2=200,y2=-5)
+  connected to box1 at rectangular (0, 0)
+  connected to box2 at rectangular (0, 0)
+  call k k_2
+  set thetaa "pi/2"
+end
+
+dynamic D1 is dampener (x1=-30,y1=-35,x2=-150,y2=-35)
+  connected to box1 at rectangular (0, 0)
+  connected to wall at rectangular (0, 0)
+  call b b_1
+  set thetaa "-pi/2"
+end
+
+dynamic R1 is rod (x1=250,y1=-55,x2=400,y2=-150)
+  connected to box2 at polar (0, 0)
+  connected to ball at rectangular (0, 0)
+  call T T
+  call l L
+  call thetaa O
+  set showangles 1
+end

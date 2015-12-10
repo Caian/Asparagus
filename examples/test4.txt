@@ -1,0 +1,16 @@
+globals
+  set gravity.theta 0
+  call time t
+  call gravity.value g
+end
+
+object box at (0,0) is box (height=30,width=200,angle=0,offx=-50,offy=0)
+  call rt.mass I
+  call $.name M
+  set tr.x 0
+  set tr.y 0
+end
+
+dynamic w1 is weight (x1=50,y1=0,x2=50,y2=-100)
+  connected to box at polar (L, "pi/2")
+end

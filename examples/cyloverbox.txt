@@ -1,0 +1,32 @@
+globals
+	set gravity.theta 0
+	call time t
+	call gravity.value g
+end
+
+object box at (200, 0) is box (height=50,width=70,rfox=0,rfoy=-100)
+	set tr.y Y1
+	set rt.mass 0
+	set rt.angle 0
+	call tr.mass m
+	call tr.x x
+	call $.name m
+end
+
+object cylinder at (200, 55) is ball (radius=30,rfox=0,rfoy=100)
+	set tr.x X1
+	set tr.y Y2
+	set tr.mass 0
+	call rt.mass J_1
+	call rt.angle O
+	call $.name J_1
+end
+
+dynamic r1 is rod (x1=200,y1=25,x2=200,y2=25)
+	connected to box at polar (R, "pi")
+	connected to cylinder at polar (r, 0)
+	call T T_1
+	set thetaa "pi/2"
+	set rollb 1
+	set l 0
+end

@@ -1,0 +1,31 @@
+globals
+	set gravity.theta 0
+	call time t
+	call gravity.value g
+end
+
+object box at (0, 0) is box (height=50,width=70,rfox=0,rfoy=-100)
+	call tr.mass m
+	call tr.x x
+	call $.name m
+	set tr.y Y
+	set rt.mass 0
+	set rt.angle 0
+end
+
+object dummy at (200, 0) is box (height=0,width=0)
+	call tr.x f
+	call $.name ""
+	set rt.mass 0
+	set tr.mass 0
+	set tr.y Y
+	set rt.angle 0
+end
+
+dynamic r1 is spring (x1=0,y1=0,x2=200,y2=0)
+	connected to box at rectangular (0, 0)
+	connected to dummy at rectangular (0, 0)
+	call T T_1
+	set thetaa "pi/2"
+	set l 0
+end

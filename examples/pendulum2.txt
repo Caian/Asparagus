@@ -1,0 +1,55 @@
+globals
+  set gravity.theta 0
+  call time t
+  call gravity.value g
+end
+
+object wall at (0, 0) is wall (height=0,width=100)
+	set rt.mass 0
+	set tr.mass 0
+	set rt.angle 0
+	set tr.x 0
+	set tr.y 0
+end
+
+object ball1 at (170,-170) is ball (radius=30,rfox=100,rfoy=0)
+	set rt.mass 0
+	set rt.angle 0
+	call tr.mass M_{b1}
+	call tr.x u
+	call tr.y v
+	call $.name ""
+end
+
+dynamic r1 is rod (x1=0,y1=0,x2=170,y2=-170)
+	connected to wall at rectangular (0,0)
+	connected to ball1 at rectangular (0,0)
+	call T T_1
+	call l L_1
+	call thetaa O_1
+end
+
+dynamic w1 is weight(x1=170,y1=-170,x2=170,y2=-270)
+	connected to ball1
+end
+
+object ball2 at (40,-350) is ball (radius=30,rfox=100,rfoy=0)
+	set rt.mass 0
+	set rt.angle 0
+	call tr.mass M_{b2}
+	call tr.x x
+	call tr.y y
+	call $.name ""
+end
+
+dynamic r2 is rod (x1=170,y1=-170,x2=40,y2=-350)
+	connected to ball1 at rectangular (0,0)
+	connected to ball2 at rectangular (0,0)
+	call T T_2
+	call l L_2
+	call thetaa O_2
+end
+
+dynamic w2 is weight(x1=40,y1=-350,x2=40,y2=-450)
+	connected to ball2
+end

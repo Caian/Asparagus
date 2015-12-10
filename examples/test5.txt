@@ -1,0 +1,5 @@
+globals
+  set gravity.theta 0
+  call time t
+  call gravity.value g
+end

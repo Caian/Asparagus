@@ -1,0 +1,17 @@
+globals
+  set gravity.theta 0
+  call time t
+  call gravity.value g
+end
+
+object pendulum at (0, 0) is box (height=100,width=20,offy=90)
+	call tr.mass M
+	call rt.mass I
+	call rt.angle O
+	set tr.x Xp
+	set tr.y Yp
+end
+
+dynamic w1 is weight (x1=0,y1=-90,x2=0,y2=-190)
+	connected to pendulum at polar (r, 0)
+end
